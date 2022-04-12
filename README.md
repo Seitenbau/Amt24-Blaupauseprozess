@@ -1,10 +1,10 @@
-# Blaupause-Prozess der sächsischen Staatskanzlei
+# Blaupause-Prozess der Sächsischen Staatskanzlei
 
 ## Einleitung
 
 Der Blaupause-Prozess ist eine Vorlage, mit der Kommunen, Landratsämter, Ministerien und andere öffentliche Einrichtungen möglichst schnell und einfach ihre Anträge auf Amt24 bereitstellen können. Seine Verwendung richtet sich dabei auch speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder nur die Formular-Funktion von Amt24 verwenden möchten.
 
-Das Projekt wird von der sächsischen Staatskanzlei beauftragt und durch [SEITENBAU](https://www.seitenbau.com/was-wir-koennen/public-service-design) umgesetzt.
+Das Projekt wird von der Sächsischen Staatskanzlei beauftragt und durch die [SEITENBAU GmbH](https://www.seitenbau.com/was-wir-koennen/public-service-design) umgesetzt.
 
 ## Funktionsumfang
 
@@ -18,15 +18,15 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration diese Schritte:
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
 1. "Antrag eingereicht" Nachricht an Servicekonto des Antragsstellers.
-1. Umwandlung in einen konfigurierbaren Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei zwischen:
+1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei zwischen:
    1. XML
    1. CSV
    1. PDF
-1. "Antrag eingegangen" Nachricht an Servicekonto des zuständigen Sachbearbeiters mit den gewählten Dateiformaten.
+1. "Antrag eingegangen" Nachricht an Servicekonto des zuständigen Sachbearbeiters mit den gewählten Datenformat.
 
 ## Einrichten & Anpassen des Prozesses
 
-Um den Blaupause-Prozess nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
+Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
 
 ### Voraussetzungen
 
@@ -58,7 +58,7 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
 1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter.
 1. Melden Sie sich im Admincenter an und erstellen Sie dort ein neues Formular:
    ![image-20220411153346074](markdown-assets/image-20220411153346074.png)
-1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass diese aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
+1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass dieser aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
    1. Ihre Organisation
    1. Dem Namen des Prozesses
    1. Einer Bezeichnung, dass es sich hierbei um das Antragstellerformular (und nicht z. B. um ein Prüfformular, oder das eines Sachbearbeiters handelt).
@@ -68,7 +68,7 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
    * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments.
 
-Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, dass eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten):
+Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten):
 
 ![image-20220411121436469](markdown-assets/image-20220411121436469.png)
 
@@ -87,7 +87,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
    1. Ihre Organisation
    1. Dem Namen des Prozesses
    1. z. B. `landesdirektionSachsen-studienplatzNachLandarztgesetz`
-1. Importieren Sie die im ersten Schritte heruntergeladenen `.bpm20.xml`-Datei:
+1. Importieren Sie die im ersten Schritte heruntergeladene `.bpm20.xml`-Datei:
    ![image-20220411162652004](markdown-assets/image-20220411162652004.png)
 1. Ändern Sie den Dateinamen auf den gleichen Namen wie in Schritt 3:
    ![image-20220411164123473](markdown-assets/image-20220411164123473.png)
@@ -118,7 +118,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
    String processName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
    ```
 
-1. Ersetzten Sie das `REPLACE_ME` durch den Namen Ihres Prozesses. Der dahinterstehende Kommentar können Sie ebenfalls entfernen. z. B. 
+1. Ersetzen Sie das `REPLACE_ME` durch den Namen Ihres Prozesses. Der dahinterstehende Kommentar können Sie ebenfalls entfernen. z. B. 
    ```groovy
    String processName = "Test ist Teststadt beantragen"
    ```
@@ -135,15 +135,15 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
    1. `formular`: Hier sind keine Änderungen notwendig. Lassen Sie den Wert einfach so stehen
    1. `MANDANTEN_ID`: Diese können Sie aus dem Amt24-Admincenter auslesen. Öffnen Sie dieses dazu am besten in einem neuen Tab und navigieren Sie wie im Screenshot dargestellt:
       ![image-20220412110227076](markdown-assets/image-20220412110227076.png)
-   1. `FORMULAR_ID`: Dies entspricht dem im Abschnitt "[Formular einrichten](#formular-einrichten)", Punkt 3, gewählten Namen.
-   1. `VERSION`: Dies entspricht der im Abschnitt "[Formular einrichten](#formular-einrichten)", gewählten Version. Falls Sie den Prozess zum ersten Mal einrichten, ist dies `v1.0`
+   1. `FORMULAR_ID`: Dies entspricht dem im Abschnitt "[Formular einrichten](#formular-einrichten)", Punkt 3 gewählten Namen.
+   1. `VERSION`: Dies entspricht der im Abschnitt "[Formular einrichten](#formular-einrichten)" gewählten Version. Falls Sie den Prozess zum ersten Mal einrichten, ist dies `v1.0`
 1. Der neue Form-Key könnte beispielsweise so aussehen: `formular:6000527:MeineTestorganisation_MeinTestprozess_ApplicantForm:v1.0`
 1. Bestätigen Sie die Änderungen, indem Sie z. B. auf eine weiße Fläche im Canvas klicken.
 
-### Dateiformat auswählen
+### Datenformat auswählen
 
 1. Entscheiden Sie sich, in welchem Format Sie die Antragsdaten erhalten möchten.
-1. Entfernen Sie die **Verbindungen** (die Scripttasks selbst können Sie stehen lassen) zu Dateiformaten, die Sie nicht benötigen:
+1. Entfernen Sie die **Verbindungen** (die Scripttasks selbst können Sie stehen lassen) zu Datenformaten, die Sie nicht benötigen:
    ![image-20220412111435796](markdown-assets/image-20220412111435796.png)
 
 ### Deployen
@@ -182,8 +182,6 @@ Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Sc
 
 ## Weitere Hilfe
 
-Weitere Informationen zur Formulargestaltung und Prozessmodellierung, sowie Fragemöglichkeiten finden Sie in der [Serviceportal Entwicklungscommunity](https://serviceportal-entwicklungscommunity.sachsen.de/). (Diese Seite befindet sich zum Zeitpunkt der Erstellung dieses Dokuments noch im Aufbau.)
-
-Hilfe zu Fragen allgemeiner Art zur Digitalisierung in Sachsen finden Sie bei der sächsischen Staatskanzlei. Sie steht ebenfalls als Anlaufstelle für Änderungswünsche und neue Features der Prozessblaupause zur Verfügung.
+Hilfe zu Fragen allgemeiner Art zur Digitalisierung in Sachsen finden Sie bei der Sächsischen Staatskanzlei. Sie steht ebenfalls als Anlaufstelle für Änderungswünsche und neue Features der Prozessblaupause zur Verfügung.
 
 SEITENBAU bietet (kostenpflichtige) Unterstützung bei individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
