@@ -1,0 +1,1426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="ELEKTRONISCHER_ANTRAG">
+  <process id="SkBlaupausenprozess" name="SK - Blaupausenprozess (Dieses Feld muss vom Modellierer ersetzt werden!)" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <userTask id="inputForm" name="${processName}" activiti:assignee="${startedBy}" activiti:formKey="formular:MANDANTEN_ID:FORMULAR_ID:VERSION"></userTask>
+    <serviceTask id="sendMessageToCaseWorker" name="Nachricht an Sachbearbeiter schicken" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.NachrichtAnMSBWService">
+      <extensionElements>
+        <activiti:field name="empfaengerId">
+          <activiti:expression><![CDATA[userId:${assignedCaseWorker}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="betreff">
+          <activiti:expression><![CDATA[${processName}: Neuer Antrag eingegangen]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="text">
+          <activiti:expression><![CDATA[Guten Tag,
+
+Ein neuer Antrag für den Prozess "${processName}" ist eingegangen.
+
+Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierten Dateiformat, sowie ggf. von der antragstellende Person hochgelade Dateien.]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="anhaenge">
+          <activiti:expression><![CDATA[${filesToSendToCaseworker}]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="createPdf" name="PDF erstellen" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.PdfErstellenService">
+      <extensionElements>
+        <activiti:field name="source">
+          <activiti:expression><![CDATA[${applicantForm}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="target">
+          <activiti:expression><![CDATA[applicantFormAsPdf]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow3" sourceRef="inputForm" targetRef="validateForm"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="renamePdf" targetRef="reviewApplication"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="sendMessageToCaseWorker" targetRef="endevent1"></sequenceFlow>
+    <scriptTask id="createXmlForCaseworker" name="XML-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
+import de.seitenbau.serviceportal.formulare.api.FormRow
+import de.seitenbau.serviceportal.formulare.api.FieldType
+import groovy.xml.MarkupBuilder
+import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
+import de.seitenbau.serviceportal.prozess.servicetask.ClientUtil
+import org.activiti.engine.delegate.DelegateExecution
+import org.slf4j.LoggerFactory
+import de.seitenbau.serviceportal.formulare.api.FieldGroup
+import de.seitenbau.serviceportal.formulare.api.FormAndMapping
+import de.seitenbau.serviceportal.formulare.api.FormContent
+import de.seitenbau.serviceportal.formulare.api.FormFieldContent
+import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
+import org.slf4j.Logger
+import de.seitenbau.serviceportal.common.api.BinaryContent
+import groovy.xml.XmlUtil
+import org.activiti.engine.impl.context.Context
+/**
+ * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
+ * ensures they are always followed.
+ *
+ * Log messages can be read in the "admincenter": https://{baseURL}/admincenter/#!prozesslogs
+ */
+class ServiceportalLogger {
+  /**
+   * Use this severity for general log messages.
+   *
+   * Logs a message in the "INFO" severity. In the context of the "Serviceportal" this is the
+   * correct level for all general log messages.
+   *
+   * @param msg The message to log
+   */
+  static void log(String msg) {
+    getLogger().info(msg)
+  }
+  /**
+   * Use this severity for debug messages.
+   *
+   * Logs a message in the "INFO" severity (because the "serviceportal" doesn't support lower log
+   * severities.
+   *
+   * Note that a finished process should no longer include any debug messages!
+   *
+   * @param msg The message to log
+   */
+  static void logDebug(String msg) {
+    getLogger().info("[DEBUG] $msg")
+  }
+  /**
+   * Use this severity for warning messages - i.e. for processes that can continue to run but might
+   * include invalid / faulty data that was fixed automatically.
+   *
+   * @param msg The message to log
+   */
+  static void logWarn(String msg) {
+    getLogger().warn(msg)
+  }
+  /**
+   * Use this severity for error messages - i.e. for processes that can no longer be run. You should
+   * also throw an exception to stop execution.
+   *
+   * @param msg The message to log
+   */
+  static void logError(String msg) {
+    getLogger().error(msg)
+  }
+  private static Logger getLogger() {
+    String nameOfProcess
+    try {
+      DelegateExecution execution = Context?.getExecutionContext()?.getExecution()
+      nameOfProcess = execution?.getProcessDefinitionId() // usually something like "m6000357.debugstadtMusterprozess:1:432568"
+    } catch (EmptyStackException ignored) {
+      // Expected when run in a test suite / IDE (i.e. when NOT in the context of a "serviceportal" instance)
+      nameOfProcess = "DOES_NOT_MATTER"
+    }
+    assert nameOfProcess != null: "Failed to determine name of process."
+    assert nameOfProcess != "": "Failed to determine name of process."
+    Logger logger = LoggerFactory.getLogger("de.seitenbau.serviceportal.prozess.$nameOfProcess".toString())
+    return logger
+  }
+}
+class FormDumper {
+  private FormContent formContent
+  static private final String iso8601Format = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+  static private final String CSV_SEPARATOR = ","
+  FormDumper(FormContent formContent) {
+    this.formContent = formContent
+  }
+  /**
+   * Dump the content of a form as a HTML table
+   *
+   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
+   * @param languageCode the language of the form (most likely "de")
+   * @param baseHeadingLevel the HTML-heading level for the top-most element (groups / accordions, etc)
+   * @return a String containing HTML code
+   */
+  String dumpFormAsHtmlTable(String processInstanceId, String languageCode = "de", int baseHeadingLevel = 2) {
+    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+    final String styledTh = "<th class=\"sp-m-formTable-header-6\">"
+    final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
+    String result = ""
+    formAndMapping.groups.each { FieldGroup group ->
+      result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
+      // A group might have more than one instance if it is a table, accordion, etc
+      group.instances.each { FieldGroup instance ->
+        // Determine the content of that instance first, so we can decide later if we want to
+        // show the (otherwise possibly empty) group
+        String groupContentRendered = ""
+        instance.rows.each { FormRow row ->
+          row.fields.each { FormFieldAndMapping field ->
+            if (shouldRenderField(field)) {
+              groupContentRendered += "<tr>"
+              // Left column: The question
+              groupContentRendered += "${styledTd}${field.label}</td>"
+              // Right column: The answer
+              groupContentRendered += styledTd
+              groupContentRendered += renderFieldForUserOutput(field)
+              groupContentRendered += "</td>"
+              groupContentRendered += "</tr>"
+            }
+          }
+        }
+        // Now, build the instance
+        if (!groupContentRendered.isEmpty()) {
+          // General headings for the instance
+          result += "<table class=\"sp-m-formTable-table\">"
+          result += "<thead><tr>${styledTh}Feld</th>${styledTh}Ihre Eingabe</th></tr></thead>"
+          result += "<tbody>"
+          result += groupContentRendered
+          result += "</tbody>"
+          result += "</table>"
+        } else {
+          result += "[Keine Eingabe]"
+        }
+      }
+    }
+    return result
+  }
+  /**
+   * Dump the content of a form as a human readable text
+   *
+   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
+   * @param languageCode the language of the form (most likely "de")
+   * @param printGroupHeadings set to true if groups in the form should have headings
+   * @return a String containing a human readable version of the form
+   */
+  String dumpFormAsText(String processInstanceId, String languageCode = "de", boolean printGroupHeadings = true) {
+    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+    String result = ""
+    formAndMapping.groups.each { FieldGroup group ->
+      boolean groupIsEmpty = true
+      group.instances.eachWithIndex { FieldGroup instance, int index ->
+        // Group heading
+        if (printGroupHeadings) {
+          String groupHeading = ""
+          if (!group.title.empty) {
+            groupHeading += group.title + " "
+          }
+          groupHeading += "(${group.id})"
+          if (group.instances.size() > 1) {
+            groupHeading += " (Instanz ${index + 1}/${group.instances.size()})"
+          }
+          groupHeading += ":\n"
+          result += groupHeading
+          groupIsEmpty = false
+        }
+        instance.rows.each { FormRow row ->
+          row.fields.each { FormFieldAndMapping field ->
+            if (shouldRenderField(field)) {
+              result += "  ${field.label} >>> ${renderFieldForUserOutput(field)} <<<\n"
+              groupIsEmpty = false
+            }
+          }
+        }
+      }
+      if (!groupIsEmpty) // only print newlines, if there actually was something to separate
+        result += "\n"
+    }
+    if (result.length() != 0) {
+      result = result.substring(0, result.length() - 1) // remove last newline
+    }
+    return result
+  }
+  /**
+   * Dump the form as a simple CSV String in which the first column contains the form field name
+   * and the second column the users input (as a technical value, e.g. "TRUE" / "FALSE" for
+   * Yes/No-fields and the selected value (not the label) in a radio button)
+   *
+   * @return A String of representing the CSV files content
+   */
+  String dumpFormAsCsv() {
+    String result = ""
+    formContent.fields.each {
+      result += it.key + CSV_SEPARATOR + escapeForCsv(it.value.value.toString()) + "\r\n"
+    }
+    return result
+  }
+  /**
+   * See {@link #dumpFormAsCsv}, but the second column is moved to the third and now contains the
+   * Java data type instead.
+   * @return
+   */
+  String dumpFormAsCsvWithDatatype() {
+    String result = ""
+    formContent.fields.each {
+      result += it.key + CSV_SEPARATOR
+      def userInput = it?.value?.value
+      if (userInput == null) {
+        result += "null" + CSV_SEPARATOR
+        result += "[no user input]" + "\r\n"
+      } else {
+        result += userInput.getClass().getSimpleName() + CSV_SEPARATOR
+        result += escapeForCsv(userInput.toString()) + "\r\n"
+      }
+    }
+    return result
+  }
+  /**
+   * Dump the form as a XML string where there is a single 'serviceportal-fields', with sub-fields for each group,
+   * which then has sub-fields for each group instance in this group (starting with "instance_"), which then has
+   * sub-fields for each field.
+   *
+   * If a field is a BinaryContent, the value becomes <b>multiple</b> sub-fields "base64Data", "mimetype" and "filename"
+   *
+   * If a field is a List (e. g. a Multi-Select-Field), the value becomes <b>multiple</b> sub-fields, named
+   * <code>selectedValue</code>.
+   *
+   * Example:
+   * <pre>
+   * {@code
+   <serviceportal-fields>
+   <mainGroupId>
+   <instance_0>
+   <textfield>TEXTFIELD</textfield>
+   <simpleCheckbox>true</simpleCheckbox>
+   <selectOptions>VAL2</selectOptions>
+   <date>2015-07-08T00:00:00.000+02:00</date>
+   <time>1970-01-01T11:55:00.000+01:00</time>
+   <money>5.66</money>
+   <checkboxList>
+   <selectedValue>VAL1</selectedValue>
+   <selectedValue>VAL2</selectedValue>
+   </checkboxList>
+   <fileupload>
+   <base64Data>ABBREVIATED_IN_EXAMPLE</base64Data>
+   <mimetype>application/pdf</mimetype>
+   <filename>dummy.pdf</filename>
+   </fileupload>
+   </instance_0>
+   </mainGroupId>
+   </serviceportal-fields>
+    }
+   * </pre>
+   *
+   * @return The XML as a String
+   */
+  String dumpAsXml() {
+    StringWriter writer = new StringWriter()
+    MarkupBuilder xml = new MarkupBuilder(writer)
+    Set<String> groups = formContent.fields.keySet().collect { return it.split(":")[0] }
+    xml."serviceportal-fields"() {
+      groups.each { group ->
+        assert group.matches("^[a-zA-Z_][\\w.-]*\$"): "Failed to create XML file. Group name '$group' is not a valid name for a XML node. Please change the group name."
+        "$group"() {
+          Set<Integer> groupInstances = formContent.fields.keySet().findAll { it.startsWith("$group:") }
+                  .collect { Integer.parseInt(it.split(":")[1]) }
+          groupInstances.each { groupInstance ->
+            // XML tags can NOT start with a number, so we need to add a prefix like "instance_" to it.
+            "instance_$groupInstance"() {
+              Set<String> fields = formContent.fields.keySet().findAll { it.startsWith("$group:$groupInstance:") }
+                      .collect { it.split(":")[2] }
+              fields.each { field ->
+                String fullKey = "$group:$groupInstance:$field".toString()
+                assert field.matches("^[a-zA-Z_][\\w.-]*\$"): "Failed to create XML file. Field name '$field' is not a valid name for a XML node. Please change the field name."
+                "${field}" { mkp.yieldUnescaped(renderFieldForXmlOutput(formContent.fields.get(fullKey))) }
+              }
+            }
+          }
+        }
+      }
+    }
+    return writer.toString()
+  }
+  /**
+   * Get a String representation useful for displaying it back to the user.
+   * E.g. Checkboxes will contain the label the user selected, dates are formatted with a German
+   * date format and no time component, etc.
+   *
+   * @param field The field to render
+   * @return The String representation
+   */
+  private static String renderFieldForUserOutput(FormFieldAndMapping field) {
+    if (field.value == null) {
+      return "[Keine Eingabe]"
+    } else {
+      switch (field.type) {
+        case FieldType.STRING:
+          return field.value
+          break
+        case FieldType.TEXTAREA:
+          return field.value
+          break
+        case FieldType.FILE:
+          return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
+          break
+        case FieldType.SINGLE_CHECKBOX:
+          // Fall-through to FieldType.BOOLEAN
+        case FieldType.BOOLEAN:
+          return field.value ? "Ja" : "Nein"
+          break
+        case FieldType.CHECKBOX:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.RADIO_BUTTONS:
+          return findLabelForPossibleValue(field.possibleValues, field.value as String)
+          break
+        case FieldType.DROPDOWN_SINGLE_SELECT:
+          return findLabelForPossibleValue(field.possibleValues, field.value as String)
+          break
+        case FieldType.DROPDOWN_MULTIPLE_SELECT:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.TWO_LIST_SELECT:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.DATE:
+          return (field.value as Date).format("dd.MM.yyyy")
+          break
+        case FieldType.TIME:
+          return (field.value as Date).format("HH:mm")
+          break
+        case FieldType.EURO_BETRAG:
+          return (field.value as BigDecimal).toString() + " €"
+          break
+        case FieldType.SUBMITTED_WITH_NPA_INFO:
+          return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
+          break
+        case FieldType.TEXT:
+          // Fall-through to PLACEHOLDER
+        case FieldType.H2:
+          // Fall-through to PLACEHOLDER
+        case FieldType.H1:
+          // Fall-through to PLACEHOLDER
+        case FieldType.PLACEHOLDER:
+          // User can't input data in this field type
+          return ""
+          break
+      }
+    }
+    throw new RuntimeException("Unexpected field type '${field.type}'. " +
+            "The FormDumper class does not know how to render that.")
+  }
+  private static String renderFieldForXmlOutput(FormFieldContent field) {
+    def value = field.value
+    if (value == null) {
+      return "" // Empty fields have empty strings
+    }
+    switch (value.class) {
+      case String:
+        return XmlUtil.escapeXml(value as String)
+        break
+      case Boolean:
+        return value ? "true" : "false"
+        break
+      case Date:
+        Date date = value as Date
+        return date.format(iso8601Format, TimeZone.getTimeZone("Europe/Berlin"))
+        break
+      case BinaryContent:
+        BinaryContent bc = value as BinaryContent
+        StringWriter bcWriter = new StringWriter()
+        MarkupBuilder bcXml = new MarkupBuilder(bcWriter)
+        bcXml."base64Data"(bc.data.encodeBase64().toString())
+        bcXml."mimetype"(XmlUtil.escapeXml(bc.mimetype))
+        bcXml."filename"(XmlUtil.escapeXml(bc.uploadedFilename))
+        return bcWriter.toString()
+        break
+      case List:
+        List list = value as List
+        StringWriter listWriter = new StringWriter()
+        MarkupBuilder listXml = new MarkupBuilder(listWriter)
+        list.each {
+          listXml."selectedValue"(XmlUtil.escapeXml(it as String))
+        }
+        return listWriter.toString()
+        break
+      case BigDecimal:
+        return XmlUtil.escapeXml((value as BigDecimal).toPlainString())
+        break
+      default:
+        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
+                "so it defaults to toString()")
+        return value.toString()
+    }
+  }
+  private static String generateCommaSeparatedListOfPossibleValueLabel(List<String> values, List<PossibleValue> pvList) {
+    String result = ""
+    boolean isFirst = true
+    values.each { technicalName ->
+      if (!isFirst) {
+        // Add separator
+        result += ", "
+      }
+      result += findLabelForPossibleValue(pvList, technicalName)
+      isFirst = false
+    }
+    return result
+  }
+  private static String findLabelForPossibleValue(List<PossibleValue> pvList, String value) {
+    PossibleValue pv = pvList.find { it.value == value }
+    if (pv != null) {
+      return pv.label
+    } else {
+      throw new IllegalArgumentException("Could not find possible value '$value' in PossibleValueList '$pvList'")
+    }
+  }
+  /**
+   * Checks various conditions whether a field should be rendered to the output
+   * @param field the field to check
+   * @return true, if the field should be shown
+   */
+  private static boolean shouldRenderField(FormFieldAndMapping field, boolean hideDisabled = true) {
+    // Don't show blank fields
+    if (field.isBlank()) {
+      return false
+    }
+    // Don't show disabled fields
+    if (hideDisabled && field.getDisabled()) {
+      return false
+    }
+    // Don't show TEXT-fields the user can't input into
+    if (field.type == FieldType.TEXT ||
+            field.type == FieldType.H2 ||
+            field.type == FieldType.H1 ||
+            field.type == FieldType.PLACEHOLDER) {
+      return false
+    }
+    // DO show all other fields
+    return true
+  }
+  /**
+   * Get a FormAndMapping from a FormContent.
+   *
+   * Useful for getting the questions to the already known answers.
+   */
+  private static FormAndMapping getFormAndMapping(FormContent formContent, String languageCode, String processInstanceId) {
+    // Empty, we don't want to replace anything, but it is a required parameter
+    FormReplacementValues replacementValues = new FormReplacementValues()
+    // [[ WARNING ]]
+    // ClientUtil is an undocumented internal class. Updates to the "Serviceplattform" are not guaranteed to be
+    // backwards-compatible and might break existing processes and scripts. Use only as-is and after consulting with the
+    // "Schildkröten"-Team at SEITENBAU for your particular and well-defined use-case.
+    // We expect a "Serviceplattform" Upgrade in Q4 2020 which will break all processes using this feature. An upgrade
+    // will be required by then.
+    FormAndMapping formAndMapping = ClientUtil.getClientUtil().getFormOperationClient().
+            getFormAndMappingWithoutContentById(formContent.getFormId(), languageCode, processInstanceId, replacementValues)
+    formAndMapping.setContent(formContent)
+    return formAndMapping
+  }
+  private static String escapeForCsv(String stringToEscape) {
+    // Add surrounding quotes and escape quotes that might appear in the string
+    return "\"" + stringToEscape.replace("\"", "\"\"") + "\""
+  }
+}
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+FormContent fc = execution.getVariable("applicantForm") as FormContent
+String xml = new FormDumper(fc).dumpAsXml()
+String filenamePrefix = execution.getVariable("filenamePrefix")
+String filename = filenamePrefix + ".xml"
+BinaryContent binaryContent = new BinaryContent(
+        "",
+        filename,
+        "",
+        "application/xml",
+        xml.getBytes("UTF-8"))
+execution.setVariable("applicantFormAsXml", binaryContent)]]></script>
+    </scriptTask>
+    <userTask id="lastPage" name="${processName}: Antrag eingegangen" activiti:assignee="${startedBy}" activiti:formKey="showOnce">
+      <documentation>Vielen Dank, Ihr Antrag wurde erfolgreich übermittelt.
+
+Wir senden Ihnen nun eine Kopie des Antrags an Ihr {{POSTFACH}}.
+
+Sie können diese Seite nun schließe.
+
+{{STARTSEITE}}</documentation>
+    </userTask>
+    <sequenceFlow id="flow8" sourceRef="startevent1" targetRef="determineOrgUnit"></sequenceFlow>
+    <serviceTask id="determineOrgUnit" name="Zuständige Organisationseinheit ermitteln" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.ZustaendigeOrganisationseinheitErmittelnService">
+      <extensionElements>
+        <activiti:field name="leistung">
+          <activiti:expression><![CDATA[${leistung}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="region">
+          <activiti:expression><![CDATA[${region}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="target">
+          <activiti:expression><![CDATA[assignedOrgUnits]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow11" sourceRef="determineOrgUnit" targetRef="init"></sequenceFlow>
+    <scriptTask id="init" name="Prozess initiieren" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.prozess.service.model.ProcessKommunikation
+import org.activiti.engine.impl.context.Context
+import de.seitenbau.serviceportal.prozess.service.model.ProcessOeExtended
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+// Define the name of the process
+String processName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
+execution.setVariable("processName", processName)
+// Derive file names from process name
+String processNameNoSpecialCharacters = processName
+        .replaceAll("ä", "ae")
+        .replaceAll("ö", "oe")
+        .replaceAll("ü", "ue")
+        .replaceAll("[^\\w|\\d]", "_")
+if (processNameNoSpecialCharacters.length() > 20){
+  processNameNoSpecialCharacters = processNameNoSpecialCharacters.substring(0, 20)
+}
+String filenamePrefix = processNameNoSpecialCharacters + "_" + execution.getProcessInstanceId()
+execution.setVariable("filenamePrefix", filenamePrefix)
+// Allow application to be retracted
+execution.setVariable("killable", true)
+// Determine assigned case worker
+List<ProcessOeExtended> assignedOrgUnits = execution.getVariable("assignedOrgUnits") as List<ProcessOeExtended>
+assert assignedOrgUnits != null: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da keine Organisationseinheiten dem Prozess zugeordnet sind."
+assert assignedOrgUnits.size() != 0: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da keine Organisationseinheiten dem Prozess zugeordnet sind."
+assert assignedOrgUnits.size() < 2: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da mehr als eine Organisationseinheiten dem Prozess zugeordnet sind. (Zugeordnet sind: ${assignedOrgUnits.join(",")})"
+ProcessOeExtended assignedOrgUnit = assignedOrgUnits.first()
+ProcessKommunikation servicekontoKommunikation = assignedOrgUnit?.oe?.kommunikation?.find {
+  it?.kanal == "SERVICEKONTO"
+}
+assert servicekontoKommunikation != null: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da der ermittelnten Organisationseinheit '${assignedOrgUnit.oe.accountId}' keine 'SERVICEKONTO' Kommunikation zugeordnet ist."
+String assignedCaseWorker = servicekontoKommunikation.kennung
+assert assignedCaseWorker != null && !assignedCaseWorker.isEmpty()
+execution.setVariable("assignedCaseWorker", assignedCaseWorker)]]></script>
+    </scriptTask>
+    <scriptTask id="prepareMessageToCaseworker" name="Nachricht an SB vorbereiten" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.formulare.api.FormContent
+import de.seitenbau.serviceportal.common.api.BinaryContent
+import org.activiti.engine.impl.context.Context
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+List<BinaryContent> filesToSendToCaseworker = []
+// CSV
+BinaryContent applicantFormAsCsv = execution.getVariable("applicantFormAsCsv") as BinaryContent
+if (applicantFormAsCsv != null) {
+  filesToSendToCaseworker.add(applicantFormAsCsv)
+}
+// XML
+BinaryContent applicantFormAsXml = execution.getVariable("applicantFormAsXml") as BinaryContent
+if (applicantFormAsXml != null) {
+  filesToSendToCaseworker.add(applicantFormAsXml)
+}
+// PDF
+Boolean sendPdfToCaseworker = execution.getVariable("sendPdfToCaseworker")
+if (sendPdfToCaseworker != null) {
+  assert sendPdfToCaseworker
+  // Should always be true or null (= script task was not connected by modeller)
+  BinaryContent applicantFormAsPdf = execution.getVariable("applicantFormAsPdf") as BinaryContent
+  filesToSendToCaseworker.add(applicantFormAsPdf)
+}
+// User-uploaded files
+String filenamePrefix = execution.getVariable("filenamePrefix")
+FormContent applicantForm = execution.getVariable("applicantForm") as FormContent
+applicantForm.fields.findAll { it.value.value instanceof BinaryContent }.each {
+  BinaryContent bc = it.value.value as BinaryContent
+  // Rename user upload
+  String filenameExtension = bc.uploadedFilename.split("\\.")?.last()
+  if (filenameExtension == null) {
+    filenameExtension = ""
+  }
+  String fieldIdNormalized = it.key.replaceAll("[^\\w|\\d]", "_")
+  bc.uploadedFilename = filenamePrefix + "_anhang_" + fieldIdNormalized + filenameExtension
+  filesToSendToCaseworker.add(bc)
+}
+execution.setVariable("filesToSendToCaseworker", filesToSendToCaseworker)]]></script>
+    </scriptTask>
+    <sequenceFlow id="flow13" sourceRef="prepareMessageToCaseworker" targetRef="sendMessageToCaseWorker"></sequenceFlow>
+    <scriptTask id="validateForm" name="Formular validieren" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.formulare.api.FormContent
+import org.activiti.engine.impl.context.Context
+// Gather form data
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+FormContent applicantForm = execution.getVariable("applicantForm") as FormContent
+assert applicantForm != null: "Fehler beim Validieren des Formulars. Es konnten keine " +
+        "Formulardaten in der Prozessinstanzvariable 'applicantForm' gefunden werden. Bitte " +
+        "prüfen Sie, ob Sie eine entsprechende Anbindung gepflegt habe."
+// The process instance variable "isFormValid" will be checked by the gateway in the BPMN model.
+// First, assume everything in the form is correct and we can continue to the next step in the model
+execution.setVariable("isFormValid", true)
+// There are no other script-based verification steps yet. These might get added in a later version.]]></script>
+    </scriptTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow14" sourceRef="validateForm" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow15" name="Formular OK" sourceRef="exclusivegateway1" targetRef="createPdf">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isFormValid == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow16" name="Formular fehlerhaft" sourceRef="exclusivegateway1" targetRef="inputForm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isFormValid == false}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="login" name="Login" activiti:assignee="${startedBy}" activiti:formKey="serviceportal-login">
+      <documentation>// This code will be replaced by the build script. It is important
+// that this (or any other) comment is written here in the bpmn file
+// as the "buildModel" gradle task would otherwise create an empty
+// "xmlns" attribute, which would later lead to the very confusing
+// "Unexpected character" exception when trying to deploy the model.</documentation>
+    </userTask>
+    <serviceTask id="sendMessageToApplicant" name="Nachricht an Antragssteller schicken" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.NachrichtAnMSBWService">
+      <extensionElements>
+        <activiti:field name="empfaengerId">
+          <activiti:expression><![CDATA[${startedBy}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="betreff">
+          <activiti:expression><![CDATA[${processName}: Antrag eingegangen]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="text">
+          <activiti:expression><![CDATA[Guten Tag,
+
+Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden Sie eine Antragskopie als PDF.]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="anhaenge">
+          <activiti:expression><![CDATA[${applicantFormAsPdf}]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <userTask id="reviewApplication" name="${processName}: Antrag prüfen" activiti:assignee="${startedBy}" activiti:formKey="formular:1:Staatskanzlei_Prozessblaupause_Review:v1.0"></userTask>
+    <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow26" sourceRef="reviewApplication" targetRef="exclusivegateway6"></sequenceFlow>
+    <sequenceFlow id="flow27" name="&quot;Korrigieren&quot;" sourceRef="exclusivegateway6" targetRef="inputForm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pressedButton == "back"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow28" name="&quot;Einreichen&quot;" sourceRef="exclusivegateway6" targetRef="lastPage">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pressedButton == "continue"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow30" sourceRef="init" targetRef="login"></sequenceFlow>
+    <sequenceFlow id="flow31" sourceRef="login" targetRef="inputForm"></sequenceFlow>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <scriptTask id="createCsvForCaseworker" name="CSV-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
+import de.seitenbau.serviceportal.formulare.api.FormRow
+import de.seitenbau.serviceportal.formulare.api.FieldType
+import groovy.xml.MarkupBuilder
+import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
+import de.seitenbau.serviceportal.prozess.servicetask.ClientUtil
+import org.activiti.engine.delegate.DelegateExecution
+import org.slf4j.LoggerFactory
+import de.seitenbau.serviceportal.formulare.api.FieldGroup
+import de.seitenbau.serviceportal.formulare.api.FormAndMapping
+import de.seitenbau.serviceportal.formulare.api.FormContent
+import de.seitenbau.serviceportal.formulare.api.FormFieldContent
+import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
+import org.slf4j.Logger
+import de.seitenbau.serviceportal.common.api.BinaryContent
+import groovy.xml.XmlUtil
+import org.activiti.engine.impl.context.Context
+/**
+ * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
+ * ensures they are always followed.
+ *
+ * Log messages can be read in the "admincenter": https://{baseURL}/admincenter/#!prozesslogs
+ */
+class ServiceportalLogger {
+  /**
+   * Use this severity for general log messages.
+   *
+   * Logs a message in the "INFO" severity. In the context of the "Serviceportal" this is the
+   * correct level for all general log messages.
+   *
+   * @param msg The message to log
+   */
+  static void log(String msg) {
+    getLogger().info(msg)
+  }
+  /**
+   * Use this severity for debug messages.
+   *
+   * Logs a message in the "INFO" severity (because the "serviceportal" doesn't support lower log
+   * severities.
+   *
+   * Note that a finished process should no longer include any debug messages!
+   *
+   * @param msg The message to log
+   */
+  static void logDebug(String msg) {
+    getLogger().info("[DEBUG] $msg")
+  }
+  /**
+   * Use this severity for warning messages - i.e. for processes that can continue to run but might
+   * include invalid / faulty data that was fixed automatically.
+   *
+   * @param msg The message to log
+   */
+  static void logWarn(String msg) {
+    getLogger().warn(msg)
+  }
+  /**
+   * Use this severity for error messages - i.e. for processes that can no longer be run. You should
+   * also throw an exception to stop execution.
+   *
+   * @param msg The message to log
+   */
+  static void logError(String msg) {
+    getLogger().error(msg)
+  }
+  private static Logger getLogger() {
+    String nameOfProcess
+    try {
+      DelegateExecution execution = Context?.getExecutionContext()?.getExecution()
+      nameOfProcess = execution?.getProcessDefinitionId() // usually something like "m6000357.debugstadtMusterprozess:1:432568"
+    } catch (EmptyStackException ignored) {
+      // Expected when run in a test suite / IDE (i.e. when NOT in the context of a "serviceportal" instance)
+      nameOfProcess = "DOES_NOT_MATTER"
+    }
+    assert nameOfProcess != null: "Failed to determine name of process."
+    assert nameOfProcess != "": "Failed to determine name of process."
+    Logger logger = LoggerFactory.getLogger("de.seitenbau.serviceportal.prozess.$nameOfProcess".toString())
+    return logger
+  }
+}
+class FormDumper {
+  private FormContent formContent
+  static private final String iso8601Format = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+  static private final String CSV_SEPARATOR = ","
+  FormDumper(FormContent formContent) {
+    this.formContent = formContent
+  }
+  /**
+   * Dump the content of a form as a HTML table
+   *
+   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
+   * @param languageCode the language of the form (most likely "de")
+   * @param baseHeadingLevel the HTML-heading level for the top-most element (groups / accordions, etc)
+   * @return a String containing HTML code
+   */
+  String dumpFormAsHtmlTable(String processInstanceId, String languageCode = "de", int baseHeadingLevel = 2) {
+    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+    final String styledTh = "<th class=\"sp-m-formTable-header-6\">"
+    final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
+    String result = ""
+    formAndMapping.groups.each { FieldGroup group ->
+      result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
+      // A group might have more than one instance if it is a table, accordion, etc
+      group.instances.each { FieldGroup instance ->
+        // Determine the content of that instance first, so we can decide later if we want to
+        // show the (otherwise possibly empty) group
+        String groupContentRendered = ""
+        instance.rows.each { FormRow row ->
+          row.fields.each { FormFieldAndMapping field ->
+            if (shouldRenderField(field)) {
+              groupContentRendered += "<tr>"
+              // Left column: The question
+              groupContentRendered += "${styledTd}${field.label}</td>"
+              // Right column: The answer
+              groupContentRendered += styledTd
+              groupContentRendered += renderFieldForUserOutput(field)
+              groupContentRendered += "</td>"
+              groupContentRendered += "</tr>"
+            }
+          }
+        }
+        // Now, build the instance
+        if (!groupContentRendered.isEmpty()) {
+          // General headings for the instance
+          result += "<table class=\"sp-m-formTable-table\">"
+          result += "<thead><tr>${styledTh}Feld</th>${styledTh}Ihre Eingabe</th></tr></thead>"
+          result += "<tbody>"
+          result += groupContentRendered
+          result += "</tbody>"
+          result += "</table>"
+        } else {
+          result += "[Keine Eingabe]"
+        }
+      }
+    }
+    return result
+  }
+  /**
+   * Dump the content of a form as a human readable text
+   *
+   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
+   * @param languageCode the language of the form (most likely "de")
+   * @param printGroupHeadings set to true if groups in the form should have headings
+   * @return a String containing a human readable version of the form
+   */
+  String dumpFormAsText(String processInstanceId, String languageCode = "de", boolean printGroupHeadings = true) {
+    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+    String result = ""
+    formAndMapping.groups.each { FieldGroup group ->
+      boolean groupIsEmpty = true
+      group.instances.eachWithIndex { FieldGroup instance, int index ->
+        // Group heading
+        if (printGroupHeadings) {
+          String groupHeading = ""
+          if (!group.title.empty) {
+            groupHeading += group.title + " "
+          }
+          groupHeading += "(${group.id})"
+          if (group.instances.size() > 1) {
+            groupHeading += " (Instanz ${index + 1}/${group.instances.size()})"
+          }
+          groupHeading += ":\n"
+          result += groupHeading
+          groupIsEmpty = false
+        }
+        instance.rows.each { FormRow row ->
+          row.fields.each { FormFieldAndMapping field ->
+            if (shouldRenderField(field)) {
+              result += "  ${field.label} >>> ${renderFieldForUserOutput(field)} <<<\n"
+              groupIsEmpty = false
+            }
+          }
+        }
+      }
+      if (!groupIsEmpty) // only print newlines, if there actually was something to separate
+        result += "\n"
+    }
+    if (result.length() != 0) {
+      result = result.substring(0, result.length() - 1) // remove last newline
+    }
+    return result
+  }
+  /**
+   * Dump the form as a simple CSV String in which the first column contains the form field name
+   * and the second column the users input (as a technical value, e.g. "TRUE" / "FALSE" for
+   * Yes/No-fields and the selected value (not the label) in a radio button)
+   *
+   * @return A String of representing the CSV files content
+   */
+  String dumpFormAsCsv() {
+    String result = ""
+    formContent.fields.each {
+      result += it.key + CSV_SEPARATOR + escapeForCsv(it.value.value.toString()) + "\r\n"
+    }
+    return result
+  }
+  /**
+   * See {@link #dumpFormAsCsv}, but the second column is moved to the third and now contains the
+   * Java data type instead.
+   * @return
+   */
+  String dumpFormAsCsvWithDatatype() {
+    String result = ""
+    formContent.fields.each {
+      result += it.key + CSV_SEPARATOR
+      def userInput = it?.value?.value
+      if (userInput == null) {
+        result += "null" + CSV_SEPARATOR
+        result += "[no user input]" + "\r\n"
+      } else {
+        result += userInput.getClass().getSimpleName() + CSV_SEPARATOR
+        result += escapeForCsv(userInput.toString()) + "\r\n"
+      }
+    }
+    return result
+  }
+  /**
+   * Dump the form as a XML string where there is a single 'serviceportal-fields', with sub-fields for each group,
+   * which then has sub-fields for each group instance in this group (starting with "instance_"), which then has
+   * sub-fields for each field.
+   *
+   * If a field is a BinaryContent, the value becomes <b>multiple</b> sub-fields "base64Data", "mimetype" and "filename"
+   *
+   * If a field is a List (e. g. a Multi-Select-Field), the value becomes <b>multiple</b> sub-fields, named
+   * <code>selectedValue</code>.
+   *
+   * Example:
+   * <pre>
+   * {@code
+   <serviceportal-fields>
+   <mainGroupId>
+   <instance_0>
+   <textfield>TEXTFIELD</textfield>
+   <simpleCheckbox>true</simpleCheckbox>
+   <selectOptions>VAL2</selectOptions>
+   <date>2015-07-08T00:00:00.000+02:00</date>
+   <time>1970-01-01T11:55:00.000+01:00</time>
+   <money>5.66</money>
+   <checkboxList>
+   <selectedValue>VAL1</selectedValue>
+   <selectedValue>VAL2</selectedValue>
+   </checkboxList>
+   <fileupload>
+   <base64Data>ABBREVIATED_IN_EXAMPLE</base64Data>
+   <mimetype>application/pdf</mimetype>
+   <filename>dummy.pdf</filename>
+   </fileupload>
+   </instance_0>
+   </mainGroupId>
+   </serviceportal-fields>
+    }
+   * </pre>
+   *
+   * @return The XML as a String
+   */
+  String dumpAsXml() {
+    StringWriter writer = new StringWriter()
+    MarkupBuilder xml = new MarkupBuilder(writer)
+    Set<String> groups = formContent.fields.keySet().collect { return it.split(":")[0] }
+    xml."serviceportal-fields"() {
+      groups.each { group ->
+        assert group.matches("^[a-zA-Z_][\\w.-]*\$"): "Failed to create XML file. Group name '$group' is not a valid name for a XML node. Please change the group name."
+        "$group"() {
+          Set<Integer> groupInstances = formContent.fields.keySet().findAll { it.startsWith("$group:") }
+                  .collect { Integer.parseInt(it.split(":")[1]) }
+          groupInstances.each { groupInstance ->
+            // XML tags can NOT start with a number, so we need to add a prefix like "instance_" to it.
+            "instance_$groupInstance"() {
+              Set<String> fields = formContent.fields.keySet().findAll { it.startsWith("$group:$groupInstance:") }
+                      .collect { it.split(":")[2] }
+              fields.each { field ->
+                String fullKey = "$group:$groupInstance:$field".toString()
+                assert field.matches("^[a-zA-Z_][\\w.-]*\$"): "Failed to create XML file. Field name '$field' is not a valid name for a XML node. Please change the field name."
+                "${field}" { mkp.yieldUnescaped(renderFieldForXmlOutput(formContent.fields.get(fullKey))) }
+              }
+            }
+          }
+        }
+      }
+    }
+    return writer.toString()
+  }
+  /**
+   * Get a String representation useful for displaying it back to the user.
+   * E.g. Checkboxes will contain the label the user selected, dates are formatted with a German
+   * date format and no time component, etc.
+   *
+   * @param field The field to render
+   * @return The String representation
+   */
+  private static String renderFieldForUserOutput(FormFieldAndMapping field) {
+    if (field.value == null) {
+      return "[Keine Eingabe]"
+    } else {
+      switch (field.type) {
+        case FieldType.STRING:
+          return field.value
+          break
+        case FieldType.TEXTAREA:
+          return field.value
+          break
+        case FieldType.FILE:
+          return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
+          break
+        case FieldType.SINGLE_CHECKBOX:
+          // Fall-through to FieldType.BOOLEAN
+        case FieldType.BOOLEAN:
+          return field.value ? "Ja" : "Nein"
+          break
+        case FieldType.CHECKBOX:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.RADIO_BUTTONS:
+          return findLabelForPossibleValue(field.possibleValues, field.value as String)
+          break
+        case FieldType.DROPDOWN_SINGLE_SELECT:
+          return findLabelForPossibleValue(field.possibleValues, field.value as String)
+          break
+        case FieldType.DROPDOWN_MULTIPLE_SELECT:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.TWO_LIST_SELECT:
+          return generateCommaSeparatedListOfPossibleValueLabel(field.value as ArrayList<String>, field.possibleValues)
+          break
+        case FieldType.DATE:
+          return (field.value as Date).format("dd.MM.yyyy")
+          break
+        case FieldType.TIME:
+          return (field.value as Date).format("HH:mm")
+          break
+        case FieldType.EURO_BETRAG:
+          return (field.value as BigDecimal).toString() + " €"
+          break
+        case FieldType.SUBMITTED_WITH_NPA_INFO:
+          return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
+          break
+        case FieldType.TEXT:
+          // Fall-through to PLACEHOLDER
+        case FieldType.H2:
+          // Fall-through to PLACEHOLDER
+        case FieldType.H1:
+          // Fall-through to PLACEHOLDER
+        case FieldType.PLACEHOLDER:
+          // User can't input data in this field type
+          return ""
+          break
+      }
+    }
+    throw new RuntimeException("Unexpected field type '${field.type}'. " +
+            "The FormDumper class does not know how to render that.")
+  }
+  private static String renderFieldForXmlOutput(FormFieldContent field) {
+    def value = field.value
+    if (value == null) {
+      return "" // Empty fields have empty strings
+    }
+    switch (value.class) {
+      case String:
+        return XmlUtil.escapeXml(value as String)
+        break
+      case Boolean:
+        return value ? "true" : "false"
+        break
+      case Date:
+        Date date = value as Date
+        return date.format(iso8601Format, TimeZone.getTimeZone("Europe/Berlin"))
+        break
+      case BinaryContent:
+        BinaryContent bc = value as BinaryContent
+        StringWriter bcWriter = new StringWriter()
+        MarkupBuilder bcXml = new MarkupBuilder(bcWriter)
+        bcXml."base64Data"(bc.data.encodeBase64().toString())
+        bcXml."mimetype"(XmlUtil.escapeXml(bc.mimetype))
+        bcXml."filename"(XmlUtil.escapeXml(bc.uploadedFilename))
+        return bcWriter.toString()
+        break
+      case List:
+        List list = value as List
+        StringWriter listWriter = new StringWriter()
+        MarkupBuilder listXml = new MarkupBuilder(listWriter)
+        list.each {
+          listXml."selectedValue"(XmlUtil.escapeXml(it as String))
+        }
+        return listWriter.toString()
+        break
+      case BigDecimal:
+        return XmlUtil.escapeXml((value as BigDecimal).toPlainString())
+        break
+      default:
+        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
+                "so it defaults to toString()")
+        return value.toString()
+    }
+  }
+  private static String generateCommaSeparatedListOfPossibleValueLabel(List<String> values, List<PossibleValue> pvList) {
+    String result = ""
+    boolean isFirst = true
+    values.each { technicalName ->
+      if (!isFirst) {
+        // Add separator
+        result += ", "
+      }
+      result += findLabelForPossibleValue(pvList, technicalName)
+      isFirst = false
+    }
+    return result
+  }
+  private static String findLabelForPossibleValue(List<PossibleValue> pvList, String value) {
+    PossibleValue pv = pvList.find { it.value == value }
+    if (pv != null) {
+      return pv.label
+    } else {
+      throw new IllegalArgumentException("Could not find possible value '$value' in PossibleValueList '$pvList'")
+    }
+  }
+  /**
+   * Checks various conditions whether a field should be rendered to the output
+   * @param field the field to check
+   * @return true, if the field should be shown
+   */
+  private static boolean shouldRenderField(FormFieldAndMapping field, boolean hideDisabled = true) {
+    // Don't show blank fields
+    if (field.isBlank()) {
+      return false
+    }
+    // Don't show disabled fields
+    if (hideDisabled && field.getDisabled()) {
+      return false
+    }
+    // Don't show TEXT-fields the user can't input into
+    if (field.type == FieldType.TEXT ||
+            field.type == FieldType.H2 ||
+            field.type == FieldType.H1 ||
+            field.type == FieldType.PLACEHOLDER) {
+      return false
+    }
+    // DO show all other fields
+    return true
+  }
+  /**
+   * Get a FormAndMapping from a FormContent.
+   *
+   * Useful for getting the questions to the already known answers.
+   */
+  private static FormAndMapping getFormAndMapping(FormContent formContent, String languageCode, String processInstanceId) {
+    // Empty, we don't want to replace anything, but it is a required parameter
+    FormReplacementValues replacementValues = new FormReplacementValues()
+    // [[ WARNING ]]
+    // ClientUtil is an undocumented internal class. Updates to the "Serviceplattform" are not guaranteed to be
+    // backwards-compatible and might break existing processes and scripts. Use only as-is and after consulting with the
+    // "Schildkröten"-Team at SEITENBAU for your particular and well-defined use-case.
+    // We expect a "Serviceplattform" Upgrade in Q4 2020 which will break all processes using this feature. An upgrade
+    // will be required by then.
+    FormAndMapping formAndMapping = ClientUtil.getClientUtil().getFormOperationClient().
+            getFormAndMappingWithoutContentById(formContent.getFormId(), languageCode, processInstanceId, replacementValues)
+    formAndMapping.setContent(formContent)
+    return formAndMapping
+  }
+  private static String escapeForCsv(String stringToEscape) {
+    // Add surrounding quotes and escape quotes that might appear in the string
+    return "\"" + stringToEscape.replace("\"", "\"\"") + "\""
+  }
+}
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+FormContent fc = execution.getVariable("applicantForm") as FormContent
+String csv = new FormDumper(fc).dumpFormAsCsv()
+String filenamePrefix = execution.getVariable("filenamePrefix")
+String filename = filenamePrefix + ".csv"
+BinaryContent binaryContent = new BinaryContent(
+        "",
+        filename,
+        "",
+        "application/xml",
+        csv.getBytes("UTF-8"))
+execution.setVariable("applicantFormAsCsv", binaryContent)]]></script>
+    </scriptTask>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow32" sourceRef="lastPage" targetRef="sendMessageToApplicant"></sequenceFlow>
+    <sequenceFlow id="flow33" sourceRef="sendMessageToApplicant" targetRef="parallelgateway1"></sequenceFlow>
+    <scriptTask id="createPdfForCaseworker" name="PDF-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import org.activiti.engine.impl.context.Context
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+execution.setVariable("sendPdfToCaseworker", true)]]></script>
+    </scriptTask>
+    <sequenceFlow id="flow34" sourceRef="parallelgateway1" targetRef="createPdfForCaseworker"></sequenceFlow>
+    <sequenceFlow id="flow35" sourceRef="parallelgateway1" targetRef="createCsvForCaseworker"></sequenceFlow>
+    <sequenceFlow id="flow36" sourceRef="parallelgateway1" targetRef="createXmlForCaseworker"></sequenceFlow>
+    <sequenceFlow id="flow37" sourceRef="createXmlForCaseworker" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow38" sourceRef="createCsvForCaseworker" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow39" sourceRef="createPdfForCaseworker" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow40" sourceRef="parallelgateway2" targetRef="prepareMessageToCaseworker"></sequenceFlow>
+    <scriptTask id="renamePdf" name="PDF umbenennen" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.common.api.BinaryContent
+import org.activiti.engine.impl.context.Context
+DelegateExecution execution = Context.getExecutionContext().getExecution()
+BinaryContent applicantFormAsPdf = execution.getVariable("applicantFormAsPdf") as BinaryContent
+String filenamePrefix = execution.getVariable("filenamePrefix")
+applicantFormAsPdf.uploadedFilename = filenamePrefix + ".pdf"
+execution.setVariable("applicantFormAsPdf", applicantFormAsPdf)]]></script>
+    </scriptTask>
+    <sequenceFlow id="flow41" sourceRef="createPdf" targetRef="renamePdf"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>Antragsteller-formular</text>
+    </textAnnotation>
+    <textAnnotation id="textannotation2">
+      <text>Abschlussseite</text>
+    </textAnnotation>
+    <association id="association1" sourceRef="textannotation2" targetRef="finishPage"></association>
+    <association id="association2" sourceRef="textannotation1" targetRef="fillForm"></association>
+    <textAnnotation id="textannotation4">
+      <text>Nutzer kann PDF downloaden</text>
+    </textAnnotation>
+    <association id="association4" sourceRef="textannotation4" targetRef="verify"></association>
+    <textAnnotation id="textannotation5">
+      <text>Ein Login wird immer erzwungen</text>
+    </textAnnotation>
+    <association id="association5" sourceRef="textannotation5" targetRef="login"></association>
+    <textAnnotation id="textannotation6">
+      <text>Umwandlung in weitere Datenformate.
+
+Entfernen Sie die Verbindungspfeile, deren Dateiformat Sie nicht benötigen. Es ist möglich, mehrere Verbindungen auszuwählen.
+
+Mindestens eine Verbindung muss vorhanden sein.</text>
+    </textAnnotation>
+    <association id="association6" sourceRef="textannotation1" targetRef="inputForm"></association>
+    <association id="association7" sourceRef="textannotation4" targetRef="reviewApplication"></association>
+    <association id="association8" sourceRef="textannotation2" targetRef="lastPage"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SkBlaupausenprozess">
+    <bpmndi:BPMNPlane bpmnElement="SkBlaupausenprozess" id="BPMNPlane_SkBlaupausenprozess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="50.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="2570.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inputForm" id="BPMNShape_inputForm">
+        <omgdc:Bounds height="61.0" width="141.0" x="540.0" y="237.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMessageToCaseWorker" id="BPMNShape_sendMessageToCaseWorker">
+        <omgdc:Bounds height="61.0" width="121.0" x="2400.0" y="237.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createPdf" id="BPMNShape_createPdf">
+        <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createXmlForCaseworker" id="BPMNShape_createXmlForCaseworker">
+        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lastPage" id="BPMNShape_lastPage">
+        <omgdc:Bounds height="55.0" width="125.0" x="1496.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="determineOrgUnit" id="BPMNShape_determineOrgUnit">
+        <omgdc:Bounds height="67.0" width="105.0" x="110.0" y="234.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="init" id="BPMNShape_init">
+        <omgdc:Bounds height="55.0" width="105.0" x="240.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepareMessageToCaseworker" id="BPMNShape_prepareMessageToCaseworker">
+        <omgdc:Bounds height="55.0" width="105.0" x="2280.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="validateForm" id="BPMNShape_validateForm">
+        <omgdc:Bounds height="55.0" width="105.0" x="700.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="830.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="login" id="BPMNShape_login">
+        <omgdc:Bounds height="61.0" width="105.0" x="380.0" y="237.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMessageToApplicant" id="BPMNShape_sendMessageToApplicant">
+        <omgdc:Bounds height="61.0" width="121.0" x="1660.0" y="237.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviewApplication" id="BPMNShape_reviewApplication">
+        <omgdc:Bounds height="55.0" width="125.0" x="1230.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway6" id="BPMNShape_exclusivegateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="1370.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="1930.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createCsvForCaseworker" id="BPMNShape_createCsvForCaseworker">
+        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="310.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="2170.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createPdfForCaseworker" id="BPMNShape_createPdfForCaseworker">
+        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="380.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="renamePdf" id="BPMNShape_renamePdf">
+        <omgdc:Bounds height="55.0" width="105.0" x="1080.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="50.0" width="100.0" x="561.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation2" id="BPMNShape_textannotation2">
+        <omgdc:Bounds height="50.0" width="100.0" x="1509.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation4" id="BPMNShape_textannotation4">
+        <omgdc:Bounds height="50.0" width="100.0" x="1243.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation5" id="BPMNShape_textannotation5">
+        <omgdc:Bounds height="50.0" width="100.0" x="383.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation6" id="BPMNShape_textannotation6">
+        <omgdc:Bounds height="121.0" width="296.0" x="1925.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="681.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="1185.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1230.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="2521.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2570.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="85.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="110.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="215.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="2385.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2400.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="805.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="830.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="870.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="267.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="62.0" x="879.0" y="250.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="850.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="850.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="298.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="92.0" x="701.0" y="319.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="1355.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1370.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="1390.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1389.0" y="356.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="356.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="298.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="61.0" x="1270.0" y="342.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="1410.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1496.0" y="267.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="13.0" width="58.0" x="1410.0" y="267.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow30" id="BPMNEdge_flow30">
+        <omgdi:waypoint x="345.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="485.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="1621.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1660.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow33" id="BPMNEdge_flow33">
+        <omgdi:waypoint x="1781.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1930.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow34" id="BPMNEdge_flow34">
+        <omgdi:waypoint x="1950.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1949.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2020.0" y="407.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
+        <omgdi:waypoint x="1950.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1950.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2020.0" y="337.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow36" id="BPMNEdge_flow36">
+        <omgdi:waypoint x="1970.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2020.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
+        <omgdi:waypoint x="2125.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2170.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow38" id="BPMNEdge_flow38">
+        <omgdi:waypoint x="2125.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2189.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2190.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow39" id="BPMNEdge_flow39">
+        <omgdi:waypoint x="2125.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2190.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2190.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="2210.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2280.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow41" id="BPMNEdge_flow41">
+        <omgdi:waypoint x="1065.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association5" id="BPMNEdge_association5">
+        <omgdi:waypoint x="433.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="432.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association6" id="BPMNEdge_association6">
+        <omgdi:waypoint x="611.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association7" id="BPMNEdge_association7">
+        <omgdi:waypoint x="1293.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1292.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association8" id="BPMNEdge_association8">
+        <omgdi:waypoint x="1559.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1558.0" y="240.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

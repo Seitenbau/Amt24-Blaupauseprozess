@@ -1,0 +1,24 @@
+{
+  "id": "MandantenId:Modellierergruppe_Prozessname_ApplicantForm-v1.0-de:v1.0",
+  "title": "Hier kann ein Formulartitel gepflegt werden",
+  "sections": [
+  ],
+  "source": {
+    "service": "prozess",
+    "variableName": "applicantForm"
+  },
+  "target": {
+    "service": "prozess",
+    "variableName": "applicantForm"
+  },
+  "customButtons": {
+    "buttons": [
+      {
+        "primary": true,
+        "label": "Angaben prüfen",
+        "helptext": "Angaben prüfen und Zusammenfassung anzeigen",
+        "value": "continue"
+      }
+    ]
+  }
+}
