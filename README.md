@@ -10,7 +10,7 @@ Das Projekt wird von der Sächsischen Staatskanzlei beauftragt und durch die [SE
 
 ![sk-blaupausenprozess](markdown-assets/sk-blaupausenprozess.png)
 
-Der Blaupause-Prozess durchläuft nach seiner Konfiguration diese Schritte:
+Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierer diese Schritte:
 
 1. Bestimmung des zuständigen Sachbearbeiters / Behördenkontos (anhand der konfigurierten Organisationseinheit).
 1. Login des Antragsstellers mit einem Amt24-Servicekonto.
@@ -32,7 +32,7 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
 
 * Sie haben Zugriff auf das Admincenter des Amt24-Entwicklungssystem https://admincenter.amt24dev.sachsen.de.
   * Sie sind dort für Ihren gewünschten Mandanten (i.e. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
-  * Sie haben das Recht `Prozess- und Formularmodellierer`.
+  * Sie sind der Benutzergruppe `Prozess- und Formularmodellierer` zugeordnet.
 
 * Es existiert bereits ein Behörden- oder Organisationskonto, welches die Antragsdaten empfangen soll.
 
@@ -55,7 +55,7 @@ Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragsteller zum Aus
 
 Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu folgendermaßen vor:
 
-1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter.
+1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden und die Datei anschließend mit `Strg + S` abspeichern.)
 1. Melden Sie sich im Admincenter an und erstellen Sie dort ein neues Formular:
    ![image-20220411153346074](markdown-assets/image-20220411153346074.png)
 1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass dieser aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
@@ -65,10 +65,13 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
    1. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
    ![image-20220411152936561](markdown-assets/image-20220411152936561.png)
+   ![image-20220426155346545](markdown-assets/image-20220426155346545.png)
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
    * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments.
 
-Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten):
+Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten). Sie können dies im Formulardesigner sehen, nachdem Sie das oberste Element angeklickt haben:
+
+![image-20220426155859315](markdown-assets/image-20220426155859315.png)
 
 ![image-20220411121436469](markdown-assets/image-20220411121436469.png)
 
@@ -102,12 +105,12 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 1. Öffnen Sie das Prozessmodell im Onlineeditor:
    ![image-20220412102630134](markdown-assets/image-20220412102630134.png)
-1. Ändern Sie den `Process identifier`. Der linke Teil (im Screenshot `m6000527.`) ist ihre Mandanten-ID und wurde automatisch gesetzt. Der rechte Teil soll auf den gleichen Wert wie im Abschnitt "[Neuen Prozess in Amt24 einrichten](#neuen-prozess-in-amt24-einrichten)" gesetzt werden:
+1. Ändern Sie den `Process identifier`. Der linke Teil (im Screenshot `m6000527.`) ist ihre Mandanten-ID und wurde automatisch gesetzt. Der rechte Teil (nach dem Punkt `.`) soll auf den gleichen Wert wie im Abschnitt "[Neuen Prozess in Amt24 einrichten](#neuen-prozess-in-amt24-einrichten)" gesetzt werden:
    ![image-20220412103122456](markdown-assets/image-20220412103122456.png)
 
 ### Prozessname anpassen
 
-1. Ändern Sie das `Name` Attribut des Prozesses:
+1. Ändern Sie das `Name` Attribut des Prozesses auf einen Wert, der Ihren Prozess / Ihre Leistung gut beschreibt (z. B. `Hund in Teststadt anmelden`):
    ![image-20220412103632964](markdown-assets/image-20220412103632964.png)
 
 1. Öffnen Sie den "Prozess initiieren" Scripttask:
@@ -118,7 +121,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
    String processName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
    ```
 
-1. Ersetzen Sie das `REPLACE_ME` durch den Namen Ihres Prozesses. Der dahinterstehende Kommentar können Sie ebenfalls entfernen. z. B. 
+1. Ersetzen Sie das `REPLACE_ME` durch den Namen Ihres Prozesses (also den Wert, den Sie auch bei Schritt 1 gewählt haben). Der dahinterstehende Kommentar können Sie ebenfalls entfernen. z. B. 
    ```groovy
    String processName = "Test ist Teststadt beantragen"
    ```
@@ -143,7 +146,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 ### Datenformat auswählen
 
 1. Entscheiden Sie sich, in welchem Format Sie die Antragsdaten erhalten möchten.
-1. Entfernen Sie die **Verbindungen** (die Scripttasks selbst können Sie stehen lassen) zu Datenformaten, die Sie nicht benötigen:
+1. Entfernen Sie die **Verbindungen** (die Scripttasks (also die Tasks mit den blauen Schriftrollen Icons) selbst können Sie stehen lassen) zu Datenformaten, die Sie nicht benötigen:
    ![image-20220412111435796](markdown-assets/image-20220412111435796.png)
 
 ### Deployen
@@ -162,7 +165,7 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412144130090](markdown-assets/image-20220412144130090.png)
 
-Ihr Prozess kann nun auf dem Dev-System aufgerufen werden. Öffnen Sie das Amt24-Dev-System und suchen Sie nach Ihrem Prozess. Falls Sie in den Zuständigkeiten (siehe Abschnitt [Voraussetzungen](#voraussetzungen)) einen Ort eingeschränkt haben, geben Sie auch diesen bei der Suche an.
+Ihr Prozess kann nun auf dem Dev-System aufgerufen werden. Öffnen Sie das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den Zuständigkeiten (siehe Abschnitt [Voraussetzungen](#voraussetzungen)) einen Ort eingeschränkt haben, geben Sie auch diesen bei der Suche an.
 
 ![image-20220412143516417](markdown-assets/image-20220412143516417.png)
 
@@ -176,7 +179,7 @@ Falls Sie auf Fehlermeldungen wie `Die Liste der Aufgaben konnte nicht abgerufen
 
 ## Zertifizierung und Übertragung auf das Live-System
 
-Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind ist vor Übertragung auf das Live-System eine Zertifizierung notwendig. Mehr Informationen dazu finden Sie im [Amt24 Wiki Artikel "Einreichung von Zertifizierungsanfragen"](https://wiki.amt24.sachsen.de/bin/view/Zertifizierungen/Einreichung%20von%20Zertifizierungsanfragen/).
+Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind, ist vor Übertragung auf das Live-System eine Zertifizierung notwendig. Mehr Informationen dazu finden Sie im [Amt24 Wiki Artikel "Einreichung von Zertifizierungsanfragen"](https://wiki.amt24.sachsen.de/bin/view/Zertifizierungen/Einreichung%20von%20Zertifizierungsanfragen/).
 
 Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Schicken Sie dazu eine Mail mit Name des Prozesses und des Formulars an die SID: servicedesk@sid.sachsen.de
 
