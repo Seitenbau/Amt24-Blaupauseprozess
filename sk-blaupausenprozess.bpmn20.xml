@@ -52,6 +52,7 @@ import de.seitenbau.serviceportal.formulare.api.FormContent
 import de.seitenbau.serviceportal.formulare.api.FormFieldContent
 import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
 import org.slf4j.Logger
+import org.apache.commons.text.StringEscapeUtils
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
@@ -154,7 +155,7 @@ class FormDumper {
               groupContentRendered += "${styledTd}${field.label}</td>"
               // Right column: The answer
               groupContentRendered += styledTd
-              groupContentRendered += renderFieldForUserOutput(field)
+              groupContentRendered += StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
               groupContentRendered += "</td>"
               groupContentRendered += "</tr>"
             }
@@ -207,7 +208,7 @@ class FormDumper {
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
             if (shouldRenderField(field)) {
-              result += "  ${field.label} >>> ${renderFieldForUserOutput(field)} <<<\n"
+              result += "  ${field.label} >>> ${StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
           }
@@ -640,13 +641,7 @@ execution.setVariable("isFormValid", true)
     <sequenceFlow id="flow16" name="Formular fehlerhaft" sourceRef="exclusivegateway1" targetRef="inputForm">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isFormValid == false}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="login" name="Login" activiti:assignee="${startedBy}" activiti:formKey="serviceportal-login">
-      <documentation>// This code will be replaced by the build script. It is important
-// that this (or any other) comment is written here in the bpmn file
-// as the "buildModel" gradle task would otherwise create an empty
-// "xmlns" attribute, which would later lead to the very confusing
-// "Unexpected character" exception when trying to deploy the model.</documentation>
-    </userTask>
+    <userTask id="login" name="Login" activiti:assignee="${startedBy}" activiti:formKey="serviceportal-login"></userTask>
     <serviceTask id="sendMessageToApplicant" name="Nachricht an Antragssteller schicken" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.NachrichtAnMSBWService">
       <extensionElements>
         <activiti:field name="empfaengerId">
@@ -692,6 +687,7 @@ import de.seitenbau.serviceportal.formulare.api.FormContent
 import de.seitenbau.serviceportal.formulare.api.FormFieldContent
 import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
 import org.slf4j.Logger
+import org.apache.commons.text.StringEscapeUtils
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
@@ -794,7 +790,7 @@ class FormDumper {
               groupContentRendered += "${styledTd}${field.label}</td>"
               // Right column: The answer
               groupContentRendered += styledTd
-              groupContentRendered += renderFieldForUserOutput(field)
+              groupContentRendered += StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
               groupContentRendered += "</td>"
               groupContentRendered += "</tr>"
             }
@@ -847,7 +843,7 @@ class FormDumper {
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
             if (shouldRenderField(field)) {
-              result += "  ${field.label} >>> ${renderFieldForUserOutput(field)} <<<\n"
+              result += "  ${field.label} >>> ${StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
           }
