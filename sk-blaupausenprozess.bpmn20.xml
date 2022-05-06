@@ -36,7 +36,7 @@ Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierte
     </serviceTask>
     <sequenceFlow id="flow3" sourceRef="inputForm" targetRef="validateForm"></sequenceFlow>
     <sequenceFlow id="flow4" sourceRef="renamePdf" targetRef="reviewApplication"></sequenceFlow>
-    <sequenceFlow id="flow5" sourceRef="sendMessageToCaseWorker" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="sendMessageToCaseWorker" targetRef="sendMessageToApplicant"></sequenceFlow>
     <scriptTask id="createXmlForCaseworker" name="XML-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
 import de.seitenbau.serviceportal.formulare.api.FormRow
@@ -612,7 +612,7 @@ applicantForm.fields.findAll { it.value.value instanceof BinaryContent }.each {
     filenameExtension = ""
   }
   String fieldIdNormalized = it.key.replaceAll("[^\\w|\\d]", "_")
-  bc.uploadedFilename = filenamePrefix + "_anhang_" + fieldIdNormalized + filenameExtension
+  bc.uploadedFilename = filenamePrefix + "_anhang_" + fieldIdNormalized + "." + filenameExtension
   filesToSendToCaseworker.add(bc)
 }
 execution.setVariable("filesToSendToCaseworker", filesToSendToCaseworker)]]></script>
@@ -666,7 +666,7 @@ Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden 
     <sequenceFlow id="flow27" name="&quot;Korrigieren&quot;" sourceRef="exclusivegateway6" targetRef="inputForm">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pressedButton == "back"}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow28" name="&quot;Einreichen&quot;" sourceRef="exclusivegateway6" targetRef="lastPage">
+    <sequenceFlow id="flow28" name="&quot;Einreichen&quot;" sourceRef="exclusivegateway6" targetRef="parallelgateway1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pressedButton == "continue"}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow30" sourceRef="init" targetRef="login"></sequenceFlow>
@@ -1147,13 +1147,12 @@ BinaryContent binaryContent = new BinaryContent(
         "",
         filename,
         "",
-        "application/xml",
+        "text/csv",
         csv.getBytes("UTF-8"))
 execution.setVariable("applicantFormAsCsv", binaryContent)]]></script>
     </scriptTask>
     <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
-    <sequenceFlow id="flow32" sourceRef="lastPage" targetRef="sendMessageToApplicant"></sequenceFlow>
-    <sequenceFlow id="flow33" sourceRef="sendMessageToApplicant" targetRef="parallelgateway1"></sequenceFlow>
+    <sequenceFlow id="flow33" sourceRef="sendMessageToApplicant" targetRef="lastPage"></sequenceFlow>
     <scriptTask id="createPdfForCaseworker" name="PDF-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
 import org.activiti.engine.impl.context.Context
@@ -1178,6 +1177,7 @@ applicantFormAsPdf.uploadedFilename = filenamePrefix + ".pdf"
 execution.setVariable("applicantFormAsPdf", applicantFormAsPdf)]]></script>
     </scriptTask>
     <sequenceFlow id="flow41" sourceRef="createPdf" targetRef="renamePdf"></sequenceFlow>
+    <sequenceFlow id="flow42" sourceRef="lastPage" targetRef="endevent1"></sequenceFlow>
     <textAnnotation id="textannotation1">
       <text>Antragsteller-formular</text>
     </textAnnotation>
@@ -1211,22 +1211,22 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="35.0" width="35.0" x="50.0" y="250.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="2570.0" y="250.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="2520.0" y="250.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="inputForm" id="BPMNShape_inputForm">
         <omgdc:Bounds height="61.0" width="141.0" x="540.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sendMessageToCaseWorker" id="BPMNShape_sendMessageToCaseWorker">
-        <omgdc:Bounds height="61.0" width="121.0" x="2400.0" y="237.0"></omgdc:Bounds>
+        <omgdc:Bounds height="61.0" width="121.0" x="1970.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="createPdf" id="BPMNShape_createPdf">
         <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="createXmlForCaseworker" id="BPMNShape_createXmlForCaseworker">
-        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="240.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1590.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="lastPage" id="BPMNShape_lastPage">
-        <omgdc:Bounds height="55.0" width="125.0" x="1496.0" y="240.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="125.0" x="2340.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="determineOrgUnit" id="BPMNShape_determineOrgUnit">
         <omgdc:Bounds height="67.0" width="105.0" x="110.0" y="234.0"></omgdc:Bounds>
@@ -1235,7 +1235,7 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="55.0" width="105.0" x="240.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="prepareMessageToCaseworker" id="BPMNShape_prepareMessageToCaseworker">
-        <omgdc:Bounds height="55.0" width="105.0" x="2280.0" y="240.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1850.0" y="240.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="validateForm" id="BPMNShape_validateForm">
         <omgdc:Bounds height="55.0" width="105.0" x="700.0" y="240.0"></omgdc:Bounds>
@@ -1247,7 +1247,7 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="61.0" width="105.0" x="380.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sendMessageToApplicant" id="BPMNShape_sendMessageToApplicant">
-        <omgdc:Bounds height="61.0" width="121.0" x="1660.0" y="237.0"></omgdc:Bounds>
+        <omgdc:Bounds height="61.0" width="121.0" x="2150.0" y="237.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="reviewApplication" id="BPMNShape_reviewApplication">
         <omgdc:Bounds height="55.0" width="125.0" x="1230.0" y="240.0"></omgdc:Bounds>
@@ -1256,16 +1256,16 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="40.0" width="40.0" x="1370.0" y="247.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="1930.0" y="247.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="1500.0" y="247.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="createCsvForCaseworker" id="BPMNShape_createCsvForCaseworker">
-        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="310.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1590.0" y="310.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
-        <omgdc:Bounds height="40.0" width="40.0" x="2170.0" y="247.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="1740.0" y="247.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="createPdfForCaseworker" id="BPMNShape_createPdfForCaseworker">
-        <omgdc:Bounds height="55.0" width="105.0" x="2020.0" y="380.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1590.0" y="380.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="renamePdf" id="BPMNShape_renamePdf">
         <omgdc:Bounds height="55.0" width="105.0" x="1080.0" y="240.0"></omgdc:Bounds>
@@ -1274,7 +1274,7 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="50.0" width="100.0" x="561.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation2" id="BPMNShape_textannotation2">
-        <omgdc:Bounds height="50.0" width="100.0" x="1509.0" y="100.0"></omgdc:Bounds>
+        <omgdc:Bounds height="50.0" width="100.0" x="2353.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation4" id="BPMNShape_textannotation4">
         <omgdc:Bounds height="50.0" width="100.0" x="1243.0" y="100.0"></omgdc:Bounds>
@@ -1283,7 +1283,7 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdc:Bounds height="50.0" width="100.0" x="383.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation6" id="BPMNShape_textannotation6">
-        <omgdc:Bounds height="121.0" width="296.0" x="1925.0" y="100.0"></omgdc:Bounds>
+        <omgdc:Bounds height="121.0" width="296.0" x="1495.0" y="100.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
         <omgdi:waypoint x="681.0" y="267.0"></omgdi:waypoint>
@@ -1294,8 +1294,8 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdi:waypoint x="1230.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
-        <omgdi:waypoint x="2521.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2570.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2091.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2150.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
         <omgdi:waypoint x="85.0" y="267.0"></omgdi:waypoint>
@@ -1306,8 +1306,8 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdi:waypoint x="240.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
-        <omgdi:waypoint x="2385.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2400.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1955.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1970.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
         <omgdi:waypoint x="805.0" y="267.0"></omgdi:waypoint>
@@ -1344,7 +1344,7 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
         <omgdi:waypoint x="1410.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1496.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1500.0" y="267.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="13.0" width="58.0" x="1410.0" y="267.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
@@ -1357,49 +1357,49 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdi:waypoint x="485.0" y="267.0"></omgdi:waypoint>
         <omgdi:waypoint x="540.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
-        <omgdi:waypoint x="1621.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1660.0" y="267.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow33" id="BPMNEdge_flow33">
-        <omgdi:waypoint x="1781.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1930.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2271.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2340.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow34" id="BPMNEdge_flow34">
-        <omgdi:waypoint x="1950.0" y="287.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1949.0" y="407.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2020.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1520.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1519.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1590.0" y="407.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
-        <omgdi:waypoint x="1950.0" y="287.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1950.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2020.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1520.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1520.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1590.0" y="337.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow36" id="BPMNEdge_flow36">
-        <omgdi:waypoint x="1970.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2020.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1540.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1590.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
-        <omgdi:waypoint x="2125.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2170.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1695.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1740.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow38" id="BPMNEdge_flow38">
-        <omgdi:waypoint x="2125.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2189.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2190.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1695.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1760.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1760.0" y="287.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow39" id="BPMNEdge_flow39">
-        <omgdi:waypoint x="2125.0" y="407.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2190.0" y="407.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2190.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1695.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1760.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1760.0" y="287.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
-        <omgdi:waypoint x="2210.0" y="267.0"></omgdi:waypoint>
-        <omgdi:waypoint x="2280.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1780.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1850.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow41" id="BPMNEdge_flow41">
         <omgdi:waypoint x="1065.0" y="267.0"></omgdi:waypoint>
         <omgdi:waypoint x="1080.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="2465.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2520.0" y="267.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="association5" id="BPMNEdge_association5">
         <omgdi:waypoint x="433.0" y="150.0"></omgdi:waypoint>
@@ -1414,8 +1414,8 @@ Mindestens eine Verbindung muss vorhanden sein.</text>
         <omgdi:waypoint x="1292.0" y="240.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="association8" id="BPMNEdge_association8">
-        <omgdi:waypoint x="1559.0" y="150.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1558.0" y="240.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2403.0" y="150.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2402.0" y="240.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
