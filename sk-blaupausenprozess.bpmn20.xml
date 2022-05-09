@@ -521,7 +521,7 @@ execution.setVariable("applicantFormAsXml", binaryContent)]]></script>
 
 Wir senden Ihnen nun eine Kopie des Antrags an Ihr {{POSTFACH}}.
 
-Sie können diese Seite nun schließe.
+Sie können diese Seite jetzt schließen.
 
 {{STARTSEITE}}</documentation>
     </userTask>

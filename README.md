@@ -67,7 +67,7 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
    ![image-20220411152936561](markdown-assets/image-20220411152936561.png)
    ![image-20220426155346545](markdown-assets/image-20220426155346545.png)
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
-   * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments.
+   * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments. Falls Sie dazu weitere Hilfe benötigen, siehe [weitere Hilfe](#weitere-hilfe).
 
 Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten). Sie können dies im Formulardesigner sehen, nachdem Sie das oberste Element angeklickt haben:
 
