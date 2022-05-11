@@ -34,6 +34,9 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
   * Sie sind dort für Ihren gewünschten Mandanten (i.e. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
   * Sie sind der Benutzergruppe `Prozess- und Formularmodellierer` zugeordnet.
 
+* In Ihrem gewünschten Mandanten sind die Daten zum Datenschutzbeauftragten und zum Impressum gepflegt:
+  ![image-20220511142531749](markdown-assets/image-20220511142531749.png)
+
 * Es existiert bereits ein Behörden- oder Organisationskonto, welches die Antragsdaten empfangen soll.
 
 * Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
@@ -177,9 +180,29 @@ Falls Sie auf Fehlermeldungen wie `Die Liste der Aufgaben konnte nicht abgerufen
 
 ![image-20220412144823264](markdown-assets/image-20220412144823264.png)
 
-## Zertifizierung und Übertragung auf das Live-System
+## Vorbereitung zur Übertragung auf das Live-System
+
+### Prozessparameter
+
+Prozesse, die auf der Prozessblaupause basieren, verwenden keine Prozessparameter. Dieser Fakt muss allerdings noch am Prozess hinterlegt werden. Setzen Sie dazu die notwendige Checkbox:
+
+![image-20220511140308357](markdown-assets/image-20220511140308357.png)
+
+![image-20220511140351085](markdown-assets/image-20220511140351085.png)
+
+### Datenschutzerklärung
+
+Alle Prozesse auf dem Live-System benötigen zwangsweise eine gültige Datenschutzerklärung. Öffnen Sie diese über diesen Button:
+
+![image-20220511141221160](markdown-assets/image-20220511141221160.png)
+
+Anschließend pflegen Sie die dortigen Felder und bestätigen das mit einem Klick auf den `Speichern` Button. (Bitte beachten Sie, dass SEITENBAU keine Unterstützung zu Rechtsfragen liefern kann.)
+
+### Zertifizierung
 
 Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind, ist vor Übertragung auf das Live-System eine Zertifizierung notwendig. Mehr Informationen dazu finden Sie im [Amt24 Wiki Artikel "Einreichung von Zertifizierungsanfragen"](https://wiki.amt24.sachsen.de/bin/view/Zertifizierungen/Einreichung%20von%20Zertifizierungsanfragen/).
+
+### Übertragung auf das Live-System
 
 Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Schicken Sie dazu eine Mail mit Name des Prozesses und des Formulars an die SID: servicedesk@sid.sachsen.de
 
