@@ -660,7 +660,7 @@ Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden 
         </activiti:field>
       </extensionElements>
     </serviceTask>
-    <userTask id="reviewApplication" name="${processName}: Antrag prüfen" activiti:assignee="${startedBy}" activiti:formKey="formular:1:Staatskanzlei_Prozessblaupause_Review:v1.0"></userTask>
+    <userTask id="reviewApplication" name="${processName}: Antrag prüfen" activiti:assignee="${startedBy}" activiti:formKey="formular:1:FreistaatSachsen_Blaupause_ReviewAntrag:v1.0"></userTask>
     <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow26" sourceRef="reviewApplication" targetRef="exclusivegateway6"></sequenceFlow>
     <sequenceFlow id="flow27" name="&quot;Korrigieren&quot;" sourceRef="exclusivegateway6" targetRef="inputForm">

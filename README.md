@@ -34,8 +34,8 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
   * Sie sind dort für Ihren gewünschten Mandanten (i.e. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
   * Sie sind der Benutzergruppe `Prozess- und Formularmodellierer` zugeordnet.
 
-* In Ihrem gewünschten Mandanten sind die Daten zum Datenschutzbeauftragten und zum Impressum gepflegt:
-  ![image-20220511142531749](markdown-assets/image-20220511142531749.png)
+* In Ihrem gewünschten Mandanten sind die Daten zum Bild, Datenschutzbeauftragten und zum Impressum gepflegt:
+  ![image-20220517113909629](markdown-assets/image-20220517113909629.png)
 
 * Es existiert bereits ein Behörden- oder Organisationskonto, welches die Antragsdaten empfangen soll.
 
@@ -58,7 +58,7 @@ Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragsteller zum Aus
 
 Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu folgendermaßen vor:
 
-1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden und die Datei anschließend mit `Strg + S` abspeichern.)
+1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden um nur den Dateiinhalt selbst anzuzeigen und anschließend diesen Inhalt mit `Strg + S` abspeichern.)
 1. Melden Sie sich im Admincenter an und erstellen Sie dort ein neues Formular:
    ![image-20220411153346074](markdown-assets/image-20220411153346074.png)
 1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass dieser aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
@@ -86,7 +86,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ### Neuen Prozess in Amt24 einrichten
 
-1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter.
+1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden um nur den Dateiinhalt selbst anzuzeigen und anschließend diesen Inhalt mit `Strg + S` abspeichern.)
 1. Legen Sie einen neuen Prozess an:
    ![image-20220411162316988](markdown-assets/image-20220411162316988.png)
 1. Wir empfehlen, dass dieser aus 2 Komponenten, getrennt durch einen Bindestrich `-` besteht:
