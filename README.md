@@ -1,5 +1,25 @@
 # Blaupause-Prozess der Sächsischen Staatskanzlei
 
+- [Blaupause-Prozess der Sächsischen Staatskanzlei](#blaupause-prozess-der-s-chsischen-staatskanzlei)
+  * [Einleitung](#einleitung)
+  * [Funktionsumfang](#funktionsumfang)
+  * [Einrichten & Anpassen des Prozesses](#einrichten---anpassen-des-prozesses)
+    + [Voraussetzungen](#voraussetzungen)
+    + [Formular einrichten](#formular-einrichten)
+    + [Neuen Prozess in Amt24 einrichten](#neuen-prozess-in-amt24-einrichten)
+    + [Prozess-ID anpassen](#prozess-id-anpassen)
+    + [Prozessname anpassen](#prozessname-anpassen)
+    + [Referenziertes Formular anpassen](#referenziertes-formular-anpassen)
+    + [Datenformat auswählen](#datenformat-ausw-hlen)
+    + [Deployen](#deployen)
+  * [Prozess testen](#prozess-testen)
+  * [Vorbereitung zur Übertragung auf das Live-System](#vorbereitung-zur--bertragung-auf-das-live-system)
+    + [Prozessparameter](#prozessparameter)
+    + [Datenschutzerklärung](#datenschutzerkl-rung)
+    + [Zertifizierung](#zertifizierung)
+    + [Übertragung auf das Live-System](#-bertragung-auf-das-live-system)
+  * [Weitere Hilfe](#weitere-hilfe)
+
 ## Einleitung
 
 Der Blaupause-Prozess ist eine Vorlage, mit der Kommunen, Landratsämter, Ministerien und andere öffentliche Einrichtungen möglichst schnell und einfach ihre Anträge auf Amt24 bereitstellen können. Seine Verwendung richtet sich dabei auch speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder nur die Formular-Funktion von Amt24 verwenden möchten.
@@ -58,7 +78,7 @@ Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragsteller zum Aus
 
 Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu folgendermaßen vor:
 
-1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden um nur den Dateiinhalt selbst anzuzeigen und anschließend diesen Inhalt mit `Strg + S` abspeichern.)
+1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Recksklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
 1. Melden Sie sich im Admincenter an und erstellen Sie dort ein neues Formular:
    ![image-20220411153346074](markdown-assets/image-20220411153346074.png)
 1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass dieser aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
@@ -86,7 +106,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ### Neuen Prozess in Amt24 einrichten
 
-1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie den `Raw` Button verwenden um nur den Dateiinhalt selbst anzuzeigen und anschließend diesen Inhalt mit `Strg + S` abspeichern.)
+1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Recksklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
 1. Legen Sie einen neuen Prozess an:
    ![image-20220411162316988](markdown-assets/image-20220411162316988.png)
 1. Wir empfehlen, dass dieser aus 2 Komponenten, getrennt durch einen Bindestrich `-` besteht:
@@ -184,7 +204,7 @@ Falls Sie auf Fehlermeldungen wie `Die Liste der Aufgaben konnte nicht abgerufen
 
 ### Prozessparameter
 
-Prozesse, die auf der Prozessblaupause basieren, verwenden keine Prozessparameter. Dieser Fakt muss allerdings noch am Prozess hinterlegt werden. Setzen Sie dazu die notwendige Checkbox:
+Prozesse, die auf dem Blaupause-Prozess basieren, verwenden keine Prozessparameter. Dieser Fakt muss allerdings noch am Prozess hinterlegt werden. Setzen Sie dazu die notwendige Checkbox:
 
 ![image-20220511140308357](markdown-assets/image-20220511140308357.png)
 
@@ -208,6 +228,6 @@ Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Sc
 
 ## Weitere Hilfe
 
-Hilfe zu Fragen allgemeiner Art zur Digitalisierung in Sachsen finden Sie bei der Sächsischen Staatskanzlei. Sie steht ebenfalls als Anlaufstelle für Änderungswünsche und neue Features der Prozessblaupause zur Verfügung.
+Hilfe zu Fragen allgemeiner Art zur Digitalisierung in Sachsen finden Sie bei der Sächsischen Staatskanzlei. Sie steht ebenfalls als Anlaufstelle für Änderungswünsche und neue Features des Blaupause-Prozesses zur Verfügung.
 
 SEITENBAU bietet (kostenpflichtige) Unterstützung bei individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
