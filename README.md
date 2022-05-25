@@ -1,26 +1,26 @@
 # Blaupause-Prozess der Sächsischen Staatskanzlei
 
-- [Blaupause-Prozess der Sächsischen Staatskanzlei](#blaupause-prozess-der-s-chsischen-staatskanzlei)
-  * [Einleitung](#einleitung)
-  * [Funktionsumfang](#funktionsumfang)
-  * [Einrichten & Anpassen des Prozesses](#einrichten---anpassen-des-prozesses)
-    + [Voraussetzungen](#voraussetzungen)
-    + [Formular einrichten](#formular-einrichten)
-    + [Neuen Prozess in Amt24 einrichten](#neuen-prozess-in-amt24-einrichten)
-    + [Prozess-ID anpassen](#prozess-id-anpassen)
-    + [Prozessname anpassen](#prozessname-anpassen)
-    + [Referenziertes Formular anpassen](#referenziertes-formular-anpassen)
-    + [Datenformat auswählen](#datenformat-ausw-hlen)
-    + [Deployen](#deployen)
-  * [Prozess testen](#prozess-testen)
-  * [Vorbereitung zur Übertragung auf das Live-System](#vorbereitung-zur--bertragung-auf-das-live-system)
-    + [Prozessparameter](#prozessparameter)
-    + [Datenschutzerklärung](#datenschutzerkl-rung)
-    + [Zertifizierung](#zertifizierung)
-    + [Übertragung auf das Live-System](#-bertragung-auf-das-live-system)
-  * [Weitere Hilfe](#weitere-hilfe)
+<!-- TOC start - https://derlin.github.io/bitdowntoc/ -->
 
-## Einleitung
+- [Funktionsumfang](#funktionsumfang)
+- [Einrichten & Anpassen des Prozesses](#einrichten--anpassen-des-prozesses)
+  - [Voraussetzungen](#voraussetzungen)
+  - [Formular einrichten](#formular-einrichten)
+  - [Neuen Prozess in Amt24 einrichten](#neuen-prozess-in-amt24-einrichten)
+  - [Prozess-ID anpassen](#prozess-id-anpassen)
+  - [Prozessname anpassen](#prozessname-anpassen)
+  - [Referenziertes Formular anpassen](#referenziertes-formular-anpassen)
+  - [Datenformat auswählen](#datenformat-auswählen)
+  - [Deployen](#deployen)
+- [Prozess testen](#prozess-testen)
+- [Vorbereitung zur Übertragung auf das Live-System](#vorbereitung-zur-übertragung-auf-das-live-system)
+  - [Prozessparameter](#prozessparameter)
+  - [Datenschutzerklärung](#datenschutzerklärung)
+  - [Zertifizierung](#zertifizierung)
+  - [Übertragung auf das Live-System](#übertragung-auf-das-live-system)
+- [Weitere Hilfe](#weitere-hilfe)
+
+<!-- TOC end -->
 
 Der Blaupause-Prozess ist eine Vorlage, mit der Kommunen, Landratsämter, Ministerien und andere öffentliche Einrichtungen möglichst schnell und einfach ihre Anträge auf Amt24 bereitstellen können. Seine Verwendung richtet sich dabei auch speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder nur die Formular-Funktion von Amt24 verwenden möchten.
 
@@ -91,6 +91,7 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
    ![image-20220426155346545](markdown-assets/image-20220426155346545.png)
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
    * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments. Falls Sie dazu weitere Hilfe benötigen, siehe [weitere Hilfe](#weitere-hilfe).
+   * Falls Sie später eine Datenübertragung als XML-Datei beabsichtigen: Beachten Sie bitte, dass Sie für das `ID` Attribut eines jeden Formularfelds und jeder Formulargruppe einen sprechenden Namen verwenden und nicht die automatisch generierten IDs benutzten. Die sprechenden Namen müssen den [XML-Element Namensregeln](https://stackoverflow.com/a/31130882) entsprechend. Wir empfehlen die Verwendung von camelCase.
 
 Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet der Prozess die Formulardaten). Sie können dies im Formulardesigner sehen, nachdem Sie das oberste Element angeklickt haben:
 
@@ -108,7 +109,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Recksklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
 1. Legen Sie einen neuen Prozess an:
-   ![image-20220411162316988](markdown-assets/image-20220411162316988.png)
+   ![image-20220525150722850](markdown-assets/image-20220525150722850.png)
 1. Wir empfehlen, dass dieser aus 2 Komponenten, getrennt durch einen Bindestrich `-` besteht:
    1. Ihre Organisation
    1. Dem Namen des Prozesses
@@ -164,7 +165,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
    1. `FORMULAR_ID`: Dies entspricht dem im Abschnitt "[Formular einrichten](#formular-einrichten)", Punkt 3 gewählten Namen.
    1. `VERSION`: Dies entspricht der im Abschnitt "[Formular einrichten](#formular-einrichten)" gewählten Version. Falls Sie den Prozess zum ersten Mal einrichten, ist dies `v1.0`
 1. Der neue Form-Key könnte beispielsweise so aussehen: `formular:6000527:MeineTestorganisation_MeinTestprozess_ApplicantForm:v1.0`
-1. Bestätigen Sie die Änderungen, indem Sie z. B. auf eine weiße Fläche im Canvas klicken.
+1. Verlassen Sie das "Form Key" Feld, indem Sie z. B. auf eine weiße Fläche im Prozessmodell klicken.
 
 ### Datenformat auswählen
 
@@ -224,7 +225,7 @@ Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind, ist vo
 
 ### Übertragung auf das Live-System
 
-Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Schicken Sie dazu eine Mail mit Name des Prozesses und des Formulars an die SID: servicedesk@sid.sachsen.de
+Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Schicken Sie dazu eine Mail mit der Bitte zur Übernahme des Prozesses auf das Produktivsystem an den SID: [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de). Benennen Sie dabei bitte auch das Ticket, in dem die Zertifizierung erfolgt ist.
 
 ## Weitere Hilfe
 

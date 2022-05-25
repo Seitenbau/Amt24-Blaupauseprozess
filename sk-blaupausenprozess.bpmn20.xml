@@ -17,7 +17,7 @@
 
 Ein neuer Antrag für den Prozess "${processName}" ist eingegangen.
 
-Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierten Dateiformat, sowie ggf. von der antragstellende Person hochgelade Dateien.]]></activiti:expression>
+Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierten Dateiformat, sowie ggf. von der antragstellende Person hochgeladene Dateien.]]></activiti:expression>
         </activiti:field>
         <activiti:field name="anhaenge">
           <activiti:expression><![CDATA[${filesToSendToCaseworker}]]></activiti:expression>
