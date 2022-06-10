@@ -1,4 +1,4 @@
-# Blaupause-Prozess der Sächsischen Staatskanzlei
+# Blaupause-Prozess
 
 <!-- TOC start - https://derlin.github.io/bitdowntoc/ -->
 
@@ -23,8 +23,6 @@
 <!-- TOC end -->
 
 Der Blaupause-Prozess ist eine Vorlage, mit der Kommunen, Landratsämter, Ministerien und andere öffentliche Einrichtungen möglichst schnell und einfach ihre Anträge auf Amt24 bereitstellen können. Seine Verwendung richtet sich dabei auch speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder nur die Formular-Funktion von Amt24 verwenden möchten.
-
-Das Projekt wird von der Sächsischen Staatskanzlei beauftragt und durch die [SEITENBAU GmbH](https://www.seitenbau.com/was-wir-koennen/public-service-design) umgesetzt.
 
 ## Funktionsumfang
 
@@ -78,7 +76,7 @@ Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragsteller zum Aus
 
 Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu folgendermaßen vor:
 
-1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Recksklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
+1. Laden Sie die `.json`-Datei auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Rechtsklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
 1. Melden Sie sich im Admincenter an und erstellen Sie dort ein neues Formular:
    ![image-20220411153346074](markdown-assets/image-20220411153346074.png)
 1. Vergeben Sie einen Formularnamen. Wir empfehlen, dass dieser aus 3 Komponenten besteht, getrennt durch einen Underscore `_`.
@@ -107,7 +105,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ### Neuen Prozess in Amt24 einrichten
 
-1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Recksklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
+1. Laden Sie die [Modelldatei des Blaupause-Prozesses](./sk-blaupausenprozess.bpmn20.xml) auf Ihre Festplatte herunter. (Auf GitHub können Sie mit einem Rechtsklick auf den `Raw` Button die Option `Ziel speichern unter...` wählen.)
 1. Legen Sie einen neuen Prozess an:
    ![image-20220525150722850](markdown-assets/image-20220525150722850.png)
 1. Wir empfehlen, dass dieser aus 2 Komponenten, getrennt durch einen Bindestrich `-` besteht:
