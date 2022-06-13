@@ -227,6 +227,4 @@ Nach der Zertifizierung können Sie die Übertragung des Prozesses anstoßen. Sc
 
 ## Weitere Hilfe
 
-Hilfe zu Fragen allgemeiner Art zur Digitalisierung in Sachsen finden Sie bei der Sächsischen Staatskanzlei. Sie steht ebenfalls als Anlaufstelle für Änderungswünsche und neue Features des Blaupause-Prozesses zur Verfügung.
-
 SEITENBAU bietet (kostenpflichtige) Unterstützung bei individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
