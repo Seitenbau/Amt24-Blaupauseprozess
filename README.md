@@ -140,12 +140,12 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 1. Suchen Sie die folgende Zeile:
    ```groovy
-   String processName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
+   String displayedProcessName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
    ```
 
 1. Ersetzen Sie das `REPLACE_ME` durch den Namen Ihres Prozesses (also den Wert, den Sie auch bei Schritt 1 gewählt haben). Der dahinterstehende Kommentar können Sie ebenfalls entfernen. z. B. 
    ```groovy
-   String processName = "Test ist Teststadt beantragen"
+   String displayedProcessName = "Test ist Teststadt beantragen"
    ```
 
    ![image-20220412105158261](markdown-assets/image-20220412105158261.png)
@@ -156,11 +156,11 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 1. Öffnen Sie das `Form Key` Attribut des User-Tasks zum Antragsstellerformular:
    ![image-20220412105820398](markdown-assets/image-20220412105820398.png)
-1. Der Form-Key besteht aus diesen 4 Komponenten, die durch einen Doppelpunkt `:` getrennt sind: `formular:MANDANTEN_ID:FORMULAR_ID:VERSION` Ändern Sie diese folgendermaßen ab:
+1. Der Form-Key besteht aus diesen 4 Komponenten, die durch einen Doppelpunkt `:` getrennt sind: `formular:MANDANTEN_ID:FORM_NAME:VERSION` Ändern Sie diese folgendermaßen ab:
    1. `formular`: Hier sind keine Änderungen notwendig. Lassen Sie den Wert einfach so stehen
    1. `MANDANTEN_ID`: Diese können Sie aus dem Amt24-Admincenter auslesen. Öffnen Sie dieses dazu am besten in einem neuen Tab und navigieren Sie wie im Screenshot dargestellt:
       ![image-20220412110227076](markdown-assets/image-20220412110227076.png)
-   1. `FORMULAR_ID`: Dies entspricht dem im Abschnitt "[Formular einrichten](#formular-einrichten)", Punkt 3 gewählten Namen.
+   1. `FORM_NAME`: Dies entspricht dem im Abschnitt "[Formular einrichten](#formular-einrichten)", Punkt 3 gewählten Namen.
    1. `VERSION`: Dies entspricht der im Abschnitt "[Formular einrichten](#formular-einrichten)" gewählten Version. Falls Sie den Prozess zum ersten Mal einrichten, ist dies `v1.0`
 1. Der neue Form-Key könnte beispielsweise so aussehen: `formular:6000527:MeineTestorganisation_MeinTestprozess_ApplicantForm:v1.0`
 1. Verlassen Sie das "Form Key" Feld, indem Sie z. B. auf eine weiße Fläche im Prozessmodell klicken.

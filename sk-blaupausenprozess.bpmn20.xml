@@ -3,19 +3,19 @@
   <process id="SkBlaupausenprozess" name="SK - Blaupausenprozess (Dieses Feld muss vom Modellierer ersetzt werden!)" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
     <endEvent id="endevent1" name="End"></endEvent>
-    <userTask id="inputForm" name="${processName}" activiti:assignee="${startedBy}" activiti:formKey="formular:MANDANTEN_ID:FORMULAR_ID:VERSION"></userTask>
+    <userTask id="inputForm" name="${displayedProcessName}" activiti:assignee="${startedBy}" activiti:formKey="formular:MANDANTEN_ID:FORM_NAME:VERSION"></userTask>
     <serviceTask id="sendMessageToCaseWorker" name="Nachricht an Sachbearbeiter schicken" activiti:class="de.seitenbau.serviceportal.prozess.servicetask.NachrichtAnMSBWService">
       <extensionElements>
         <activiti:field name="empfaengerId">
           <activiti:expression><![CDATA[userId:${assignedCaseWorker}]]></activiti:expression>
         </activiti:field>
         <activiti:field name="betreff">
-          <activiti:expression><![CDATA[${processName}: Neuer Antrag eingegangen]]></activiti:expression>
+          <activiti:expression><![CDATA[${displayedProcessName}: Neuer Antrag eingegangen]]></activiti:expression>
         </activiti:field>
         <activiti:field name="text">
           <activiti:expression><![CDATA[Guten Tag,
 
-Ein neuer Antrag für den Prozess "${processName}" ist eingegangen.
+Ein neuer Antrag für den Prozess "${displayedProcessName}" ist eingegangen.
 
 Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierten Dateiformat, sowie ggf. von der antragstellende Person hochgeladene Dateien.]]></activiti:expression>
         </activiti:field>
@@ -39,23 +39,24 @@ Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierte
     <sequenceFlow id="flow5" sourceRef="sendMessageToCaseWorker" targetRef="sendMessageToApplicant"></sequenceFlow>
     <scriptTask id="createXmlForCaseworker" name="XML-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
+import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
 import de.seitenbau.serviceportal.formulare.api.FormRow
 import de.seitenbau.serviceportal.formulare.api.FieldType
 import groovy.xml.MarkupBuilder
 import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
-import de.seitenbau.serviceportal.prozess.servicetask.ClientUtil
+import de.seitenbau.serviceportal.prozess.scripttask.FormularDefinitionReader
 import org.activiti.engine.delegate.DelegateExecution
 import org.slf4j.LoggerFactory
 import de.seitenbau.serviceportal.formulare.api.FieldGroup
+import de.seitenbau.serviceportal.prozess.api.task.user.form.BinaryGeoMapContent
 import de.seitenbau.serviceportal.formulare.api.FormAndMapping
 import de.seitenbau.serviceportal.formulare.api.FormContent
 import de.seitenbau.serviceportal.formulare.api.FormFieldContent
-import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
 import org.slf4j.Logger
-import org.apache.commons.text.StringEscapeUtils
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
+//file:noinspection UnnecessaryQualifiedReference - do NOT import org.apache.commons.text.StringEscapeUtils, as it cause duplicate imports of StringEscapeUtils by the gradle build plugin. See SBW-25576.
 /**
  * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
  * ensures they are always followed.
@@ -77,8 +78,8 @@ class ServiceportalLogger {
   /**
    * Use this severity for debug messages.
    *
-   * Logs a message in the "INFO" severity (because the "serviceportal" doesn't support lower log
-   * severities.
+   * Logs a message in the "INFO" severity (because the "serviceportal" log viewer doesn't support
+   * lower log severities.
    *
    * Note that a finished process should no longer include any debug messages!
    *
@@ -97,13 +98,21 @@ class ServiceportalLogger {
     getLogger().warn(msg)
   }
   /**
-   * Use this severity for error messages - i.e. for processes that can no longer be run. You should
-   * also throw an exception to stop execution.
+   * Use this severity for error messages - i.e. for processes that can no longer be run.
+   *
+   * @deprecated
+   * You should prefer throwing an exception as that would stop execution and also shows up in the
+   * log viewer
+   * 
+   * Note that this does not actually log on the "error" level, as it is not acceptable for process
+   * certification. Instead this method logs on the "warn" level and prepends "[ERROR] " to the
+   * message.
    *
    * @param msg The message to log
    */
+  @Deprecated()
   static void logError(String msg) {
-    getLogger().error(msg)
+    getLogger().warn("[ERROR] $msg")
   }
   private static Logger getLogger() {
     String nameOfProcess
@@ -130,13 +139,12 @@ class FormDumper {
   /**
    * Dump the content of a form as a HTML table
    *
-   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
-   * @param languageCode the language of the form (most likely "de")
    * @param baseHeadingLevel the HTML-heading level for the top-most element (groups / accordions, etc)
    * @return a String containing HTML code
    */
-  String dumpFormAsHtmlTable(String processInstanceId, String languageCode = "de", int baseHeadingLevel = 2) {
-    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+  String dumpFormAsHtmlTable(int baseHeadingLevel = 2) {
+    FormAndMapping formAndMapping = FormularDefinitionReader.getFormularDefinitionByFormId(formContent.getFormId())
+    formAndMapping.setContent(formContent)
     final String styledTh = "<th class=\"sp-m-formTable-header-6\">"
     final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
     String result = ""
@@ -155,7 +163,7 @@ class FormDumper {
               groupContentRendered += "${styledTd}${field.label}</td>"
               // Right column: The answer
               groupContentRendered += styledTd
-              groupContentRendered += StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
+              groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
               groupContentRendered += "</td>"
               groupContentRendered += "</tr>"
             }
@@ -180,13 +188,11 @@ class FormDumper {
   /**
    * Dump the content of a form as a human readable text
    *
-   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
-   * @param languageCode the language of the form (most likely "de")
    * @param printGroupHeadings set to true if groups in the form should have headings
    * @return a String containing a human readable version of the form
    */
-  String dumpFormAsText(String processInstanceId, String languageCode = "de", boolean printGroupHeadings = true) {
-    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+  String dumpFormAsText(boolean printGroupHeadings = true) {
+    FormAndMapping formAndMapping = FormularDefinitionReader.getFormularDefinitionByFormId(formContent.getFormId())
     String result = ""
     formAndMapping.groups.each { FieldGroup group ->
       boolean groupIsEmpty = true
@@ -208,7 +214,7 @@ class FormDumper {
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
             if (shouldRenderField(field)) {
-              result += "  ${field.label} >>> ${StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
+              result += "  ${field.label} >>> ${org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
           }
@@ -289,8 +295,7 @@ class FormDumper {
    </fileupload>
    </instance_0>
    </mainGroupId>
-   </serviceportal-fields>
-    }
+   </serviceportal-fields>}
    * </pre>
    *
    * @return The XML as a String
@@ -334,19 +339,18 @@ class FormDumper {
     if (field.value == null) {
       return "[Keine Eingabe]"
     } else {
+      //noinspection GroovyFallthrough - those fall-throughs are on purpose.
       switch (field.type) {
-        case FieldType.STRING:
-          return field.value
-          break
-        case FieldType.TEXTAREA:
+        case FieldType.STRING || FieldType.STRING_AJAX_AUTOCOMPLETE || FieldType.KFZ_KENNZEICHEN || FieldType.TEXTAREA:
           return field.value
           break
         case FieldType.FILE:
           return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
           break
-        case FieldType.SINGLE_CHECKBOX:
-          // Fall-through to FieldType.BOOLEAN
-        case FieldType.BOOLEAN:
+        case "MULTIPLE_FILE":
+          return getFilenamesFromMultipleUpload(field)
+          break
+        case FieldType.SINGLE_CHECKBOX || FieldType.BOOLEAN:
           return field.value ? "Ja" : "Nein"
           break
         case FieldType.CHECKBOX:
@@ -355,7 +359,7 @@ class FormDumper {
         case FieldType.RADIO_BUTTONS:
           return findLabelForPossibleValue(field.possibleValues, field.value as String)
           break
-        case FieldType.DROPDOWN_SINGLE_SELECT:
+        case FieldType.DROPDOWN_SINGLE_SELECT || FieldType.DROPDOWN_SINGLE_SELECT_AJAX:
           return findLabelForPossibleValue(field.possibleValues, field.value as String)
           break
         case FieldType.DROPDOWN_MULTIPLE_SELECT:
@@ -376,15 +380,19 @@ class FormDumper {
         case FieldType.SUBMITTED_WITH_NPA_INFO:
           return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
           break
-        case FieldType.TEXT:
-          // Fall-through to PLACEHOLDER
-        case FieldType.H2:
-          // Fall-through to PLACEHOLDER
-        case FieldType.H1:
-          // Fall-through to PLACEHOLDER
-        case FieldType.PLACEHOLDER:
-          // User can't input data in this field type
+        case FieldType.TEXT || FieldType.H2 || FieldType.H1 || FieldType.PLACEHOLDER || FieldType.DOWNLOAD || FieldType.VIDEO || FieldType.IMAGE:
+          // User can't input data in this field type. So nothing is rendered.
           return ""
+          break
+        case FieldType.GEO_MAP:
+          assert field.value instanceof BinaryGeoMapContent: "Field of typ `GEO_MAP` does not have expected class `BinaryGeoMapContent`"
+          BinaryGeoMapContent value = field.value as BinaryGeoMapContent
+          return value.json
+          break
+        default:
+          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " +
+                  "so it defaults to toString()")
+          return field.value.toString()
           break
       }
     }
@@ -428,6 +436,9 @@ class FormDumper {
       case BigDecimal:
         return XmlUtil.escapeXml((value as BigDecimal).toPlainString())
         break
+      case BinaryGeoMapContent:
+        // JSON format is not predictable (see https://serviceportal-community.de/153, so just output the JSON as-is)
+        return XmlUtil.escapeXml((value as BinaryGeoMapContent).json)
       default:
         ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
                 "so it defaults to toString()")
@@ -455,6 +466,17 @@ class FormDumper {
       throw new IllegalArgumentException("Could not find possible value '$value' in PossibleValueList '$pvList'")
     }
   }
+  private static String getFilenamesFromMultipleUpload(FormFieldAndMapping field) {
+    String result = ""
+    field.value.eachWithIndex { it, idx ->
+      if (idx == (field.value as List<BinaryContent>).size() - 1) {
+        result += "\"${(it as FileBinaryContent).uploadedFilename}\""
+      } else {
+        result += "\"${(it as FileBinaryContent).uploadedFilename}\", "
+      }
+    }
+    return result.strip()
+  }
   /**
    * Checks various conditions whether a field should be rendered to the output
    * @param field the field to check
@@ -473,30 +495,14 @@ class FormDumper {
     if (field.type == FieldType.TEXT ||
             field.type == FieldType.H2 ||
             field.type == FieldType.H1 ||
-            field.type == FieldType.PLACEHOLDER) {
+            field.type == FieldType.PLACEHOLDER ||
+            field.type == FieldType.DOWNLOAD ||
+            field.type == FieldType.VIDEO ||
+            field.type == FieldType.IMAGE) {
       return false
     }
     // DO show all other fields
     return true
-  }
-  /**
-   * Get a FormAndMapping from a FormContent.
-   *
-   * Useful for getting the questions to the already known answers.
-   */
-  private static FormAndMapping getFormAndMapping(FormContent formContent, String languageCode, String processInstanceId) {
-    // Empty, we don't want to replace anything, but it is a required parameter
-    FormReplacementValues replacementValues = new FormReplacementValues()
-    // [[ WARNING ]]
-    // ClientUtil is an undocumented internal class. Updates to the "Serviceplattform" are not guaranteed to be
-    // backwards-compatible and might break existing processes and scripts. Use only as-is and after consulting with the
-    // "Schildkröten"-Team at SEITENBAU for your particular and well-defined use-case.
-    // We expect a "Serviceplattform" Upgrade in Q4 2020 which will break all processes using this feature. An upgrade
-    // will be required by then.
-    FormAndMapping formAndMapping = ClientUtil.getClientUtil().getFormOperationClient().
-            getFormAndMappingWithoutContentById(formContent.getFormId(), languageCode, processInstanceId, replacementValues)
-    formAndMapping.setContent(formContent)
-    return formAndMapping
   }
   private static String escapeForCsv(String stringToEscape) {
     // Add surrounding quotes and escape quotes that might appear in the string
@@ -516,7 +522,7 @@ BinaryContent binaryContent = new BinaryContent(
         xml.getBytes("UTF-8"))
 execution.setVariable("applicantFormAsXml", binaryContent)]]></script>
     </scriptTask>
-    <userTask id="lastPage" name="${processName}: Antrag eingegangen" activiti:assignee="${startedBy}" activiti:formKey="showOnce">
+    <userTask id="lastPage" name="${displayedProcessName}: Antrag eingegangen" activiti:assignee="${startedBy}" activiti:formKey="showOnce">
       <documentation>Vielen Dank, Ihr Antrag wurde erfolgreich übermittelt.
 
 Wir senden Ihnen nun eine Kopie des Antrags an Ihr {{POSTFACH}}.
@@ -547,10 +553,10 @@ import org.activiti.engine.impl.context.Context
 import de.seitenbau.serviceportal.prozess.service.model.ProcessOeExtended
 DelegateExecution execution = Context.getExecutionContext().getExecution()
 // Define the name of the process
-String processName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
-execution.setVariable("processName", processName)
+String displayedProcessName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
+execution.setVariable("displayedProcessName", displayedProcessName)
 // Derive file names from process name
-String processNameNoSpecialCharacters = processName
+String processNameNoSpecialCharacters = displayedProcessName
         .replaceAll("ä", "ae")
         .replaceAll("ö", "oe")
         .replaceAll("ü", "ue")
@@ -648,7 +654,7 @@ execution.setVariable("isFormValid", true)
           <activiti:expression><![CDATA[${startedBy}]]></activiti:expression>
         </activiti:field>
         <activiti:field name="betreff">
-          <activiti:expression><![CDATA[${processName}: Antrag eingegangen]]></activiti:expression>
+          <activiti:expression><![CDATA[${displayedProcessName}: Antrag eingegangen]]></activiti:expression>
         </activiti:field>
         <activiti:field name="text">
           <activiti:expression><![CDATA[Guten Tag,
@@ -660,7 +666,7 @@ Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden 
         </activiti:field>
       </extensionElements>
     </serviceTask>
-    <userTask id="reviewApplication" name="${processName}: Antrag prüfen" activiti:assignee="${startedBy}" activiti:formKey="formular:1:FreistaatSachsen_Blaupause_ReviewAntrag:v1.0"></userTask>
+    <userTask id="reviewApplication" name="${displayedProcessName}: Antrag prüfen" activiti:assignee="${startedBy}" activiti:formKey="formular:1:FreistaatSachsen_Blaupause_ReviewAntrag:v1.0"></userTask>
     <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow26" sourceRef="reviewApplication" targetRef="exclusivegateway6"></sequenceFlow>
     <sequenceFlow id="flow27" name="&quot;Korrigieren&quot;" sourceRef="exclusivegateway6" targetRef="inputForm">
@@ -674,23 +680,24 @@ Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden 
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <scriptTask id="createCsvForCaseworker" name="CSV-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
+import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
 import de.seitenbau.serviceportal.formulare.api.FormRow
 import de.seitenbau.serviceportal.formulare.api.FieldType
 import groovy.xml.MarkupBuilder
 import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
-import de.seitenbau.serviceportal.prozess.servicetask.ClientUtil
+import de.seitenbau.serviceportal.prozess.scripttask.FormularDefinitionReader
 import org.activiti.engine.delegate.DelegateExecution
 import org.slf4j.LoggerFactory
 import de.seitenbau.serviceportal.formulare.api.FieldGroup
+import de.seitenbau.serviceportal.prozess.api.task.user.form.BinaryGeoMapContent
 import de.seitenbau.serviceportal.formulare.api.FormAndMapping
 import de.seitenbau.serviceportal.formulare.api.FormContent
 import de.seitenbau.serviceportal.formulare.api.FormFieldContent
-import de.seitenbau.serviceportal.formulare.api.placeholder.FormReplacementValues
 import org.slf4j.Logger
-import org.apache.commons.text.StringEscapeUtils
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
+//file:noinspection UnnecessaryQualifiedReference - do NOT import org.apache.commons.text.StringEscapeUtils, as it cause duplicate imports of StringEscapeUtils by the gradle build plugin. See SBW-25576.
 /**
  * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
  * ensures they are always followed.
@@ -712,8 +719,8 @@ class ServiceportalLogger {
   /**
    * Use this severity for debug messages.
    *
-   * Logs a message in the "INFO" severity (because the "serviceportal" doesn't support lower log
-   * severities.
+   * Logs a message in the "INFO" severity (because the "serviceportal" log viewer doesn't support
+   * lower log severities.
    *
    * Note that a finished process should no longer include any debug messages!
    *
@@ -732,13 +739,21 @@ class ServiceportalLogger {
     getLogger().warn(msg)
   }
   /**
-   * Use this severity for error messages - i.e. for processes that can no longer be run. You should
-   * also throw an exception to stop execution.
+   * Use this severity for error messages - i.e. for processes that can no longer be run.
+   *
+   * @deprecated
+   * You should prefer throwing an exception as that would stop execution and also shows up in the
+   * log viewer
+   * 
+   * Note that this does not actually log on the "error" level, as it is not acceptable for process
+   * certification. Instead this method logs on the "warn" level and prepends "[ERROR] " to the
+   * message.
    *
    * @param msg The message to log
    */
+  @Deprecated()
   static void logError(String msg) {
-    getLogger().error(msg)
+    getLogger().warn("[ERROR] $msg")
   }
   private static Logger getLogger() {
     String nameOfProcess
@@ -765,13 +780,12 @@ class FormDumper {
   /**
    * Dump the content of a form as a HTML table
    *
-   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
-   * @param languageCode the language of the form (most likely "de")
    * @param baseHeadingLevel the HTML-heading level for the top-most element (groups / accordions, etc)
    * @return a String containing HTML code
    */
-  String dumpFormAsHtmlTable(String processInstanceId, String languageCode = "de", int baseHeadingLevel = 2) {
-    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+  String dumpFormAsHtmlTable(int baseHeadingLevel = 2) {
+    FormAndMapping formAndMapping = FormularDefinitionReader.getFormularDefinitionByFormId(formContent.getFormId())
+    formAndMapping.setContent(formContent)
     final String styledTh = "<th class=\"sp-m-formTable-header-6\">"
     final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
     String result = ""
@@ -790,7 +804,7 @@ class FormDumper {
               groupContentRendered += "${styledTd}${field.label}</td>"
               // Right column: The answer
               groupContentRendered += styledTd
-              groupContentRendered += StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
+              groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
               groupContentRendered += "</td>"
               groupContentRendered += "</tr>"
             }
@@ -815,13 +829,11 @@ class FormDumper {
   /**
    * Dump the content of a form as a human readable text
    *
-   * @param processInstanceId see {@code execution.getVariable( "processInstanceId" )}
-   * @param languageCode the language of the form (most likely "de")
    * @param printGroupHeadings set to true if groups in the form should have headings
    * @return a String containing a human readable version of the form
    */
-  String dumpFormAsText(String processInstanceId, String languageCode = "de", boolean printGroupHeadings = true) {
-    FormAndMapping formAndMapping = getFormAndMapping(formContent, languageCode, processInstanceId)
+  String dumpFormAsText(boolean printGroupHeadings = true) {
+    FormAndMapping formAndMapping = FormularDefinitionReader.getFormularDefinitionByFormId(formContent.getFormId())
     String result = ""
     formAndMapping.groups.each { FieldGroup group ->
       boolean groupIsEmpty = true
@@ -843,7 +855,7 @@ class FormDumper {
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
             if (shouldRenderField(field)) {
-              result += "  ${field.label} >>> ${StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
+              result += "  ${field.label} >>> ${org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
           }
@@ -924,8 +936,7 @@ class FormDumper {
    </fileupload>
    </instance_0>
    </mainGroupId>
-   </serviceportal-fields>
-    }
+   </serviceportal-fields>}
    * </pre>
    *
    * @return The XML as a String
@@ -969,19 +980,18 @@ class FormDumper {
     if (field.value == null) {
       return "[Keine Eingabe]"
     } else {
+      //noinspection GroovyFallthrough - those fall-throughs are on purpose.
       switch (field.type) {
-        case FieldType.STRING:
-          return field.value
-          break
-        case FieldType.TEXTAREA:
+        case FieldType.STRING || FieldType.STRING_AJAX_AUTOCOMPLETE || FieldType.KFZ_KENNZEICHEN || FieldType.TEXTAREA:
           return field.value
           break
         case FieldType.FILE:
           return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
           break
-        case FieldType.SINGLE_CHECKBOX:
-          // Fall-through to FieldType.BOOLEAN
-        case FieldType.BOOLEAN:
+        case "MULTIPLE_FILE":
+          return getFilenamesFromMultipleUpload(field)
+          break
+        case FieldType.SINGLE_CHECKBOX || FieldType.BOOLEAN:
           return field.value ? "Ja" : "Nein"
           break
         case FieldType.CHECKBOX:
@@ -990,7 +1000,7 @@ class FormDumper {
         case FieldType.RADIO_BUTTONS:
           return findLabelForPossibleValue(field.possibleValues, field.value as String)
           break
-        case FieldType.DROPDOWN_SINGLE_SELECT:
+        case FieldType.DROPDOWN_SINGLE_SELECT || FieldType.DROPDOWN_SINGLE_SELECT_AJAX:
           return findLabelForPossibleValue(field.possibleValues, field.value as String)
           break
         case FieldType.DROPDOWN_MULTIPLE_SELECT:
@@ -1011,15 +1021,19 @@ class FormDumper {
         case FieldType.SUBMITTED_WITH_NPA_INFO:
           return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
           break
-        case FieldType.TEXT:
-          // Fall-through to PLACEHOLDER
-        case FieldType.H2:
-          // Fall-through to PLACEHOLDER
-        case FieldType.H1:
-          // Fall-through to PLACEHOLDER
-        case FieldType.PLACEHOLDER:
-          // User can't input data in this field type
+        case FieldType.TEXT || FieldType.H2 || FieldType.H1 || FieldType.PLACEHOLDER || FieldType.DOWNLOAD || FieldType.VIDEO || FieldType.IMAGE:
+          // User can't input data in this field type. So nothing is rendered.
           return ""
+          break
+        case FieldType.GEO_MAP:
+          assert field.value instanceof BinaryGeoMapContent: "Field of typ `GEO_MAP` does not have expected class `BinaryGeoMapContent`"
+          BinaryGeoMapContent value = field.value as BinaryGeoMapContent
+          return value.json
+          break
+        default:
+          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " +
+                  "so it defaults to toString()")
+          return field.value.toString()
           break
       }
     }
@@ -1063,6 +1077,9 @@ class FormDumper {
       case BigDecimal:
         return XmlUtil.escapeXml((value as BigDecimal).toPlainString())
         break
+      case BinaryGeoMapContent:
+        // JSON format is not predictable (see https://serviceportal-community.de/153, so just output the JSON as-is)
+        return XmlUtil.escapeXml((value as BinaryGeoMapContent).json)
       default:
         ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
                 "so it defaults to toString()")
@@ -1090,6 +1107,17 @@ class FormDumper {
       throw new IllegalArgumentException("Could not find possible value '$value' in PossibleValueList '$pvList'")
     }
   }
+  private static String getFilenamesFromMultipleUpload(FormFieldAndMapping field) {
+    String result = ""
+    field.value.eachWithIndex { it, idx ->
+      if (idx == (field.value as List<BinaryContent>).size() - 1) {
+        result += "\"${(it as FileBinaryContent).uploadedFilename}\""
+      } else {
+        result += "\"${(it as FileBinaryContent).uploadedFilename}\", "
+      }
+    }
+    return result.strip()
+  }
   /**
    * Checks various conditions whether a field should be rendered to the output
    * @param field the field to check
@@ -1108,30 +1136,14 @@ class FormDumper {
     if (field.type == FieldType.TEXT ||
             field.type == FieldType.H2 ||
             field.type == FieldType.H1 ||
-            field.type == FieldType.PLACEHOLDER) {
+            field.type == FieldType.PLACEHOLDER ||
+            field.type == FieldType.DOWNLOAD ||
+            field.type == FieldType.VIDEO ||
+            field.type == FieldType.IMAGE) {
       return false
     }
     // DO show all other fields
     return true
-  }
-  /**
-   * Get a FormAndMapping from a FormContent.
-   *
-   * Useful for getting the questions to the already known answers.
-   */
-  private static FormAndMapping getFormAndMapping(FormContent formContent, String languageCode, String processInstanceId) {
-    // Empty, we don't want to replace anything, but it is a required parameter
-    FormReplacementValues replacementValues = new FormReplacementValues()
-    // [[ WARNING ]]
-    // ClientUtil is an undocumented internal class. Updates to the "Serviceplattform" are not guaranteed to be
-    // backwards-compatible and might break existing processes and scripts. Use only as-is and after consulting with the
-    // "Schildkröten"-Team at SEITENBAU for your particular and well-defined use-case.
-    // We expect a "Serviceplattform" Upgrade in Q4 2020 which will break all processes using this feature. An upgrade
-    // will be required by then.
-    FormAndMapping formAndMapping = ClientUtil.getClientUtil().getFormOperationClient().
-            getFormAndMappingWithoutContentById(formContent.getFormId(), languageCode, processInstanceId, replacementValues)
-    formAndMapping.setContent(formContent)
-    return formAndMapping
   }
   private static String escapeForCsv(String stringToEscape) {
     // Add surrounding quotes and escape quotes that might appear in the string
