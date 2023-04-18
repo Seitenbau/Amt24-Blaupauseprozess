@@ -38,24 +38,19 @@ Im Anhang zu dieser Servicekontonachricht finden Sie den Antrag im konfigurierte
     <sequenceFlow id="flow4" sourceRef="renamePdf" targetRef="reviewApplication"></sequenceFlow>
     <sequenceFlow id="flow5" sourceRef="sendMessageToCaseWorker" targetRef="sendMessageToApplicant"></sequenceFlow>
     <scriptTask id="createXmlForCaseworker" name="XML-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
-      <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
-import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
-import de.seitenbau.serviceportal.formulare.api.FormRow
-import de.seitenbau.serviceportal.formulare.api.FieldType
+      <script><![CDATA[import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
 import groovy.xml.MarkupBuilder
-import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
 import de.seitenbau.serviceportal.prozess.scripttask.FormularDefinitionReader
 import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.formulare.api.*
 import org.slf4j.LoggerFactory
-import de.seitenbau.serviceportal.formulare.api.FieldGroup
 import de.seitenbau.serviceportal.prozess.api.task.user.form.BinaryGeoMapContent
-import de.seitenbau.serviceportal.formulare.api.FormAndMapping
 import de.seitenbau.serviceportal.formulare.api.FormContent
-import de.seitenbau.serviceportal.formulare.api.FormFieldContent
 import org.slf4j.Logger
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
+import de.seitenbau.serviceportal.formulare.api.formFieldValue.VerifiedFormFieldValue
 //file:noinspection UnnecessaryQualifiedReference - do NOT import org.apache.commons.text.StringEscapeUtils, as it cause duplicate imports of StringEscapeUtils by the gradle build plugin. See SBW-25576.
 /**
  * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
@@ -149,28 +144,33 @@ class FormDumper {
     final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
     String result = ""
     formAndMapping.groups.each { FieldGroup group ->
-      result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
       // A group might have more than one instance if it is a table, accordion, etc
       group.instances.each { FieldGroup instance ->
         // Determine the content of that instance first, so we can decide later if we want to
         // show the (otherwise possibly empty) group
         String groupContentRendered = ""
-        instance.rows.each { FormRow row ->
-          row.fields.each { FormFieldAndMapping field ->
-            if (shouldRenderField(field)) {
-              groupContentRendered += "<tr>"
-              // Left column: The question
-              groupContentRendered += "${styledTd}${field.label}</td>"
-              // Right column: The answer
-              groupContentRendered += styledTd
-              groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
-              groupContentRendered += "</td>"
-              groupContentRendered += "</tr>"
+        // check if instance is shown
+        if (instance.isInstanceShown(formAndMapping)) {
+          instance.rows.each { FormRow row ->
+            row.fields.each { FormFieldAndMapping field ->
+              // For rendering NPA fields hideDisabled must be false
+              // if (shouldRenderField(field, false) && field.isShown(instance, formAndMapping)) {
+              if (shouldRenderField(field, false) && field.isShown(instance, formAndMapping)) {
+                groupContentRendered += "<tr>"
+                // Left column: The question
+                groupContentRendered += "${styledTd}${field.label}</td>"
+                // Right column: The answer
+                groupContentRendered += styledTd
+                groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
+                groupContentRendered += "</td>"
+                groupContentRendered += "</tr>"
+              }
             }
           }
         }
         // Now, build the instance
         if (!groupContentRendered.isEmpty()) {
+          result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
           // General headings for the instance
           result += "<table class=\"sp-m-formTable-table\">"
           result += "<thead><tr>${styledTh}Feld</th>${styledTh}Ihre Eingabe</th></tr></thead>"
@@ -178,8 +178,6 @@ class FormDumper {
           result += groupContentRendered
           result += "</tbody>"
           result += "</table>"
-        } else {
-          result += "[Keine Eingabe]"
         }
       }
     }
@@ -213,7 +211,7 @@ class FormDumper {
         }
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
-            if (shouldRenderField(field)) {
+            if (shouldRenderField(field) && field.isShown(instance, formAndMapping)) {
               result += "  ${field.label} >>> ${org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
@@ -341,16 +339,29 @@ class FormDumper {
     } else {
       //noinspection GroovyFallthrough - those fall-throughs are on purpose.
       switch (field.type) {
-        case FieldType.STRING || FieldType.STRING_AJAX_AUTOCOMPLETE || FieldType.KFZ_KENNZEICHEN || FieldType.TEXTAREA:
-          return field.value
+        case FieldType.STRING:
+          // fall through
+        case FieldType.STRING_AJAX_AUTOCOMPLETE:
+          // fall through
+        case FieldType.KFZ_KENNZEICHEN:
+          // fall through
+        case FieldType.TEXTAREA:
+          if (field.value.class == VerifiedFormFieldValue) {
+            return (field.value as VerifiedFormFieldValue).value
+          } else {
+            return field.value
+          }
           break
         case FieldType.FILE:
           return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
           break
+//        TODO: FieldType Enum does not have all new types. Change to FieldTypes when switching to new scripting API
         case "MULTIPLE_FILE":
           return getFilenamesFromMultipleUpload(field)
           break
-        case FieldType.SINGLE_CHECKBOX || FieldType.BOOLEAN:
+        case FieldType.BOOLEAN:
+          // fall though
+        case FieldType.SINGLE_CHECKBOX:
           return field.value ? "Ja" : "Nein"
           break
         case FieldType.CHECKBOX:
@@ -380,24 +391,29 @@ class FormDumper {
         case FieldType.SUBMITTED_WITH_NPA_INFO:
           return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
           break
-        case FieldType.TEXT || FieldType.H2 || FieldType.H1 || FieldType.PLACEHOLDER || FieldType.DOWNLOAD || FieldType.VIDEO || FieldType.IMAGE:
+        case FieldType.TEXT:
+          // fall through
+        case FieldType.H2:
+          // fall through
+        case FieldType.H1:
+          // fall through
+        case FieldType.PLACEHOLDER:
+          // fall through
+        case FieldType.DOWNLOAD:
+          // fall through
+        case FieldType.VIDEO:
+          // fall through
+        case FieldType.IMAGE:
           // User can't input data in this field type. So nothing is rendered.
           return ""
           break
-        case FieldType.GEO_MAP:
-          assert field.value instanceof BinaryGeoMapContent: "Field of typ `GEO_MAP` does not have expected class `BinaryGeoMapContent`"
-          BinaryGeoMapContent value = field.value as BinaryGeoMapContent
-          return value.json
-          break
         default:
-          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " +
-                  "so it defaults to toString()")
+          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " + "so it defaults to toString()")
           return field.value.toString()
           break
       }
     }
-    throw new RuntimeException("Unexpected field type '${field.type}'. " +
-            "The FormDumper class does not know how to render that.")
+    throw new RuntimeException("Unexpected field type '${field.type}'. " + "The FormDumper class does not know how to render that.")
   }
   private static String renderFieldForXmlOutput(FormFieldContent field) {
     def value = field.value
@@ -440,8 +456,7 @@ class FormDumper {
         // JSON format is not predictable (see https://serviceportal-community.de/153, so just output the JSON as-is)
         return XmlUtil.escapeXml((value as BinaryGeoMapContent).json)
       default:
-        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
-                "so it defaults to toString()")
+        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " + "so it defaults to toString()")
         return value.toString()
     }
   }
@@ -501,6 +516,10 @@ class FormDumper {
             field.type == FieldType.IMAGE) {
       return false
     }
+    // Don't show GeoMap Fields, cause we have no good way to present these. The Serviceportal-PDF-Task does not render them either.
+    if (field.type == FieldType.GEO_MAP) {
+      return false
+    }
     // DO show all other fields
     return true
   }
@@ -548,9 +567,91 @@ Sie können diese Seite jetzt schließen.
     <sequenceFlow id="flow11" sourceRef="determineOrgUnit" targetRef="init"></sequenceFlow>
     <scriptTask id="init" name="Prozess initiieren" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script><![CDATA[import org.activiti.engine.delegate.DelegateExecution
+import org.slf4j.LoggerFactory
 import de.seitenbau.serviceportal.prozess.service.model.ProcessKommunikation
+import org.slf4j.Logger
 import org.activiti.engine.impl.context.Context
 import de.seitenbau.serviceportal.prozess.service.model.ProcessOeExtended
+class CaseWorkerGetter {
+  /**
+   * Returns the case worker assigned to the process.
+   *
+   * @param assignedOrgUnits the result of the ZustaendigeOrganisationseinheitErmittelnService service task.
+   * See https://doku.pmp.seitenbau.com/x/ZAYG for more details
+   *
+   * @param printLogMessages Set to false to prevent a log message from being printed. Otherwise a single log message
+   * on the INFO level will be printed that displays how the case worker was determined.
+   *
+   * @return The 'Servicekonto-ID' aka. 'IDP-ID' for the given list.
+   * Not including the "userId:" part.
+   *
+   * @throws CouldNotDetermineCaseWorkerException when no case worker could be determined. The exceptions message
+   * contains more details about the reason.
+   */
+  static String getAssignedCaseWorker(List<ProcessOeExtended> assignedOrgUnits, boolean printLogMessages = true) throws CouldNotDetermineCaseWorkerException {
+    Logger logger = LoggerFactory.getLogger("de.seitenbau.serviceportal.prozess.publicserviceteam.commonssubmodule.caseworkergetter")
+    List<String> detectedServicekontoIds = []
+    String logMessage = "Determining case worker...\n"
+    // Ensure there are assigned org units
+    if (assignedOrgUnits.empty) {
+      throw new CouldNotDetermineCaseWorkerException("Failed to determine assigned case worker. List of assigned org " +
+              "units is empty. Most likely cause is that this process was started without a 'leistung' or 'region'. " +
+              "Another cause might be that this Leistung does not have a assigned org unit. Please ensure that a " +
+              "list is provided to CaseWorkerGetter.")
+    }
+    logMessage += "Candidate org units are: "
+    logMessage += assignedOrgUnits.collect { it.oe.accountId }.join(", ")
+    logMessage += "\n"
+    // Iterate all org Units
+    for (assignedOrgUnit in assignedOrgUnits) {
+      logMessage += "Checking org unit '${assignedOrgUnit.oe.accountId}'\n"
+      // Verify "Ausprägung" (i.e. if the orgUnit is actually responsible for this "Leistung")
+      assert assignedOrgUnit.aufgabengebiet in ["KEINE", "ANSPRECHPUNKT", "ZUSTAENDIGE_STELLE_UND_ANSPRECHPUNKT"]:
+              "Unexpected Ausprägung '${assignedOrgUnit.aufgabengebiet}' in orgUnit '${assignedOrgUnit.oe.accountId}'. " +
+                      "Please inform public-service@seitenbau.com, someone needs to update the CaseWorkerGetter class."
+      if (assignedOrgUnit.aufgabengebiet == "ANSPRECHPUNKT") {
+        logMessage += "  Ausprägung is only 'Beraten', therefore this orgUnit can't provide a assigned case worker.\n"
+        continue
+      } else {
+        logMessage += "  Ausprägung is ok.\n"
+      }
+      // Find relevant "Kommunikation"
+      logMessage += "  Checking \"Kommunikation\" of orgUnit...\n"
+      Set<ProcessKommunikation> kommunikationsWithServicekonto = assignedOrgUnit.oe.kommunikation.findAll { it?.kanal == "SERVICEKONTO" }
+      if (kommunikationsWithServicekonto.empty) {
+        logMessage += "    No \"Kommunikation\" with kanal 'SERVICEKONTO' found.\n"
+      } else {
+        kommunikationsWithServicekonto.each {
+          detectedServicekontoIds.add(it.kennung)
+          logMessage += "    Kommunikation to Servicekonto '${it.kennung}' found.\n"
+        }
+      }
+    }
+    // Ensure there are results
+    if (detectedServicekontoIds.size() < 1) {
+      if (printLogMessages) logger.info(logMessage)
+      throw new CouldNotDetermineCaseWorkerException("Failed to determine assigned case worker. No fitting " +
+              "Servicekonto-ID could be determined. Please ensure that at least one assigned org unit has a " +
+              "\"Kommunikation\" setting with a valid Servicekonto-ID.")
+    }
+    // Ensure only a single result
+    if (detectedServicekontoIds.size() > 1) {
+      if (printLogMessages) logger.info(logMessage)
+      throw new CouldNotDetermineCaseWorkerException("Failed to determine assigned case worker. There are multiple " +
+              "Servicekonto-IDs that could be considered a valid case worker. Please ensure that only a single ID is " +
+              "valid, for example by setting a assigned org unit to 'beratend tätig'.")
+    }
+    String result = detectedServicekontoIds.first()
+    logMessage += "Determining assigned case worker succesfull. Result is Servicekonto '$result'."
+    if (printLogMessages) logger.info(logMessage)
+    return result
+  }
+}
+class CouldNotDetermineCaseWorkerException extends Exception {
+  CouldNotDetermineCaseWorkerException(String message) {
+    super(message)
+  }
+}
 DelegateExecution execution = Context.getExecutionContext().getExecution()
 // Define the name of the process
 String displayedProcessName = "REPLACE_ME" // TODO: Modellierer müssen diesen Namen abändern.
@@ -570,15 +671,7 @@ execution.setVariable("filenamePrefix", filenamePrefix)
 execution.setVariable("killable", true)
 // Determine assigned case worker
 List<ProcessOeExtended> assignedOrgUnits = execution.getVariable("assignedOrgUnits") as List<ProcessOeExtended>
-assert assignedOrgUnits != null: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da keine Organisationseinheiten dem Prozess zugeordnet sind."
-assert assignedOrgUnits.size() != 0: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da keine Organisationseinheiten dem Prozess zugeordnet sind."
-assert assignedOrgUnits.size() < 2: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da mehr als eine Organisationseinheiten dem Prozess zugeordnet sind. (Zugeordnet sind: ${assignedOrgUnits.join(",")})"
-ProcessOeExtended assignedOrgUnit = assignedOrgUnits.first()
-ProcessKommunikation servicekontoKommunikation = assignedOrgUnit?.oe?.kommunikation?.find {
-  it?.kanal == "SERVICEKONTO"
-}
-assert servicekontoKommunikation != null: "Zuständiger Sachbearbeiter konnte nicht ermittelt werden, da der ermittelnten Organisationseinheit '${assignedOrgUnit.oe.accountId}' keine 'SERVICEKONTO' Kommunikation zugeordnet ist."
-String assignedCaseWorker = servicekontoKommunikation.kennung
+String assignedCaseWorker = CaseWorkerGetter.getAssignedCaseWorker(assignedOrgUnits)
 assert assignedCaseWorker != null && !assignedCaseWorker.isEmpty()
 execution.setVariable("assignedCaseWorker", assignedCaseWorker)]]></script>
     </scriptTask>
@@ -679,24 +772,19 @@ Ihr Antrag wurde erfolgreich übermittelt. Im Anhang zu dieser Nachricht finden 
     <sequenceFlow id="flow31" sourceRef="login" targetRef="inputForm"></sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <scriptTask id="createCsvForCaseworker" name="CSV-Datei erstellen" scriptFormat="groovy" activiti:autoStoreVariables="false">
-      <script><![CDATA[import de.seitenbau.serviceportal.formulare.api.PossibleValue
-import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
-import de.seitenbau.serviceportal.formulare.api.FormRow
-import de.seitenbau.serviceportal.formulare.api.FieldType
+      <script><![CDATA[import de.seitenbau.serviceportal.prozess.model.FileBinaryContent
 import groovy.xml.MarkupBuilder
-import de.seitenbau.serviceportal.formulare.api.FormFieldAndMapping
 import de.seitenbau.serviceportal.prozess.scripttask.FormularDefinitionReader
 import org.activiti.engine.delegate.DelegateExecution
+import de.seitenbau.serviceportal.formulare.api.*
 import org.slf4j.LoggerFactory
-import de.seitenbau.serviceportal.formulare.api.FieldGroup
 import de.seitenbau.serviceportal.prozess.api.task.user.form.BinaryGeoMapContent
-import de.seitenbau.serviceportal.formulare.api.FormAndMapping
 import de.seitenbau.serviceportal.formulare.api.FormContent
-import de.seitenbau.serviceportal.formulare.api.FormFieldContent
 import org.slf4j.Logger
 import de.seitenbau.serviceportal.common.api.BinaryContent
 import groovy.xml.XmlUtil
 import org.activiti.engine.impl.context.Context
+import de.seitenbau.serviceportal.formulare.api.formFieldValue.VerifiedFormFieldValue
 //file:noinspection UnnecessaryQualifiedReference - do NOT import org.apache.commons.text.StringEscapeUtils, as it cause duplicate imports of StringEscapeUtils by the gradle build plugin. See SBW-25576.
 /**
  * Since all log messages in the serviceportal need to follow certain guidelines, this helper class
@@ -790,28 +878,33 @@ class FormDumper {
     final String styledTd = "<td class=\"sp-m-formTable-cell-6\">"
     String result = ""
     formAndMapping.groups.each { FieldGroup group ->
-      result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
       // A group might have more than one instance if it is a table, accordion, etc
       group.instances.each { FieldGroup instance ->
         // Determine the content of that instance first, so we can decide later if we want to
         // show the (otherwise possibly empty) group
         String groupContentRendered = ""
-        instance.rows.each { FormRow row ->
-          row.fields.each { FormFieldAndMapping field ->
-            if (shouldRenderField(field)) {
-              groupContentRendered += "<tr>"
-              // Left column: The question
-              groupContentRendered += "${styledTd}${field.label}</td>"
-              // Right column: The answer
-              groupContentRendered += styledTd
-              groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
-              groupContentRendered += "</td>"
-              groupContentRendered += "</tr>"
+        // check if instance is shown
+        if (instance.isInstanceShown(formAndMapping)) {
+          instance.rows.each { FormRow row ->
+            row.fields.each { FormFieldAndMapping field ->
+              // For rendering NPA fields hideDisabled must be false
+              // if (shouldRenderField(field, false) && field.isShown(instance, formAndMapping)) {
+              if (shouldRenderField(field, false) && field.isShown(instance, formAndMapping)) {
+                groupContentRendered += "<tr>"
+                // Left column: The question
+                groupContentRendered += "${styledTd}${field.label}</td>"
+                // Right column: The answer
+                groupContentRendered += styledTd
+                groupContentRendered += org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))
+                groupContentRendered += "</td>"
+                groupContentRendered += "</tr>"
+              }
             }
           }
         }
         // Now, build the instance
         if (!groupContentRendered.isEmpty()) {
+          result += "<h${baseHeadingLevel}>${group.title}</h${baseHeadingLevel}>"
           // General headings for the instance
           result += "<table class=\"sp-m-formTable-table\">"
           result += "<thead><tr>${styledTh}Feld</th>${styledTh}Ihre Eingabe</th></tr></thead>"
@@ -819,8 +912,6 @@ class FormDumper {
           result += groupContentRendered
           result += "</tbody>"
           result += "</table>"
-        } else {
-          result += "[Keine Eingabe]"
         }
       }
     }
@@ -854,7 +945,7 @@ class FormDumper {
         }
         instance.rows.each { FormRow row ->
           row.fields.each { FormFieldAndMapping field ->
-            if (shouldRenderField(field)) {
+            if (shouldRenderField(field) && field.isShown(instance, formAndMapping)) {
               result += "  ${field.label} >>> ${org.apache.commons.text.StringEscapeUtils.escapeHtml4(renderFieldForUserOutput(field))} <<<\n"
               groupIsEmpty = false
             }
@@ -982,16 +1073,29 @@ class FormDumper {
     } else {
       //noinspection GroovyFallthrough - those fall-throughs are on purpose.
       switch (field.type) {
-        case FieldType.STRING || FieldType.STRING_AJAX_AUTOCOMPLETE || FieldType.KFZ_KENNZEICHEN || FieldType.TEXTAREA:
-          return field.value
+        case FieldType.STRING:
+          // fall through
+        case FieldType.STRING_AJAX_AUTOCOMPLETE:
+          // fall through
+        case FieldType.KFZ_KENNZEICHEN:
+          // fall through
+        case FieldType.TEXTAREA:
+          if (field.value.class == VerifiedFormFieldValue) {
+            return (field.value as VerifiedFormFieldValue).value
+          } else {
+            return field.value
+          }
           break
         case FieldType.FILE:
           return "Datei: \"${(field.value as BinaryContent).uploadedFilename}\""
           break
+//        TODO: FieldType Enum does not have all new types. Change to FieldTypes when switching to new scripting API
         case "MULTIPLE_FILE":
           return getFilenamesFromMultipleUpload(field)
           break
-        case FieldType.SINGLE_CHECKBOX || FieldType.BOOLEAN:
+        case FieldType.BOOLEAN:
+          // fall though
+        case FieldType.SINGLE_CHECKBOX:
           return field.value ? "Ja" : "Nein"
           break
         case FieldType.CHECKBOX:
@@ -1021,24 +1125,29 @@ class FormDumper {
         case FieldType.SUBMITTED_WITH_NPA_INFO:
           return field.value ? "Sie waren mit dem neuem Personalausweis angemeldet" : "Sie waren NICHT mit dem neuem Personalausweis angemeldet"
           break
-        case FieldType.TEXT || FieldType.H2 || FieldType.H1 || FieldType.PLACEHOLDER || FieldType.DOWNLOAD || FieldType.VIDEO || FieldType.IMAGE:
+        case FieldType.TEXT:
+          // fall through
+        case FieldType.H2:
+          // fall through
+        case FieldType.H1:
+          // fall through
+        case FieldType.PLACEHOLDER:
+          // fall through
+        case FieldType.DOWNLOAD:
+          // fall through
+        case FieldType.VIDEO:
+          // fall through
+        case FieldType.IMAGE:
           // User can't input data in this field type. So nothing is rendered.
           return ""
           break
-        case FieldType.GEO_MAP:
-          assert field.value instanceof BinaryGeoMapContent: "Field of typ `GEO_MAP` does not have expected class `BinaryGeoMapContent`"
-          BinaryGeoMapContent value = field.value as BinaryGeoMapContent
-          return value.json
-          break
         default:
-          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " +
-                  "so it defaults to toString()")
+          ServiceportalLogger.logWarn("FormDumper.renderFieldForUserOutput does not know how to display this field '${field.type}', " + "so it defaults to toString()")
           return field.value.toString()
           break
       }
     }
-    throw new RuntimeException("Unexpected field type '${field.type}'. " +
-            "The FormDumper class does not know how to render that.")
+    throw new RuntimeException("Unexpected field type '${field.type}'. " + "The FormDumper class does not know how to render that.")
   }
   private static String renderFieldForXmlOutput(FormFieldContent field) {
     def value = field.value
@@ -1081,8 +1190,7 @@ class FormDumper {
         // JSON format is not predictable (see https://serviceportal-community.de/153, so just output the JSON as-is)
         return XmlUtil.escapeXml((value as BinaryGeoMapContent).json)
       default:
-        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " +
-                "so it defaults to toString()")
+        ServiceportalLogger.logWarn("FormDumper.dumpAsFlatXml does not know how to display this class '${value.class}', " + "so it defaults to toString()")
         return value.toString()
     }
   }
@@ -1140,6 +1248,10 @@ class FormDumper {
             field.type == FieldType.DOWNLOAD ||
             field.type == FieldType.VIDEO ||
             field.type == FieldType.IMAGE) {
+      return false
+    }
+    // Don't show GeoMap Fields, cause we have no good way to present these. The Serviceportal-PDF-Task does not render them either.
+    if (field.type == FieldType.GEO_MAP) {
       return false
     }
     // DO show all other fields

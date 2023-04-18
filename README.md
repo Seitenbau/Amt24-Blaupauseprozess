@@ -69,7 +69,6 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
   * Die Leistung hat eine "Zuständigkeit" gepflegt, welche die obige Organisationseinheit referenziert.
     ![image-20220412143021555](markdown-assets/image-20220412143021555.png)
 
-
 ### Formular einrichten
 
 Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragsteller zum Ausfüllen angeboten wird.
