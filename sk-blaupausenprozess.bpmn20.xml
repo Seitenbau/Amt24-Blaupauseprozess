@@ -599,12 +599,12 @@ class CaseWorkerGetter {
               "Another cause might be that this Leistung does not have a assigned org unit. Please ensure that a " +
               "list is provided to CaseWorkerGetter.")
     }
-    logMessage += "Candidate org units are: "
-    logMessage += assignedOrgUnits.collect { it.oe.accountId }.join(", ")
+    logMessage += "Candidate orgUnits are: "
+    logMessage += assignedOrgUnits.collect { "'${it.oe.getDisplayName("de")}' (ID: ${it.oe.id})" }.join(", ")
     logMessage += "\n"
     // Iterate all org Units
     for (assignedOrgUnit in assignedOrgUnits) {
-      logMessage += "Checking org unit '${assignedOrgUnit.oe.accountId}'\n"
+      logMessage += "Checking orgUnit '${assignedOrgUnit.oe.id}'\n"
       // Verify "Ausprägung" (i.e. if the orgUnit is actually responsible for this "Leistung")
       assert assignedOrgUnit.aufgabengebiet in ["KEINE", "ANSPRECHPUNKT", "ZUSTAENDIGE_STELLE_UND_ANSPRECHPUNKT"]:
               "Unexpected Ausprägung '${assignedOrgUnit.aufgabengebiet}' in orgUnit '${assignedOrgUnit.oe.accountId}'. " +
