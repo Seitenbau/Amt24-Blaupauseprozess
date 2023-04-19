@@ -69,7 +69,7 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
   * Die Leistung hat eine "Zuständigkeit" gepflegt, welche die obige Organisationseinheit referenziert.
     ![image-20220412143021555](markdown-assets/image-20220412143021555.png)
 
-Detailierte Informationen, wie ein Blaupause-Prozess das Behörden/Organisationskonto bestimmt, finden Sie im [User Guide: Bestimmung des zuständigen Sachbearbeiters](./User Guide - Bestimmung zuständiger Sachbearbeiter.md)
+Detaillierte Informationen, wie ein Blaupause-Prozess das Behörden/Organisationskonto bestimmt, finden Sie im [User Guide: Bestimmung des zuständigen Sachbearbeiters](./User_Guide_Bestimmung_zustaendiger_Sachbearbeiter.md)
 
 ### Formular einrichten
 
