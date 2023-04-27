@@ -86,7 +86,7 @@ Falls Sie noch kein solches Formular haben, empfehlen wir Ihnen, [diese Vorlage]
    1. Einer Bezeichnung, dass es sich hierbei um das Antragstellerformular (und nicht z. B. um ein Prüfformular, oder das eines Sachbearbeiters handelt).
    1. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
-   ![image-20220411152936561](markdown-assets/image-20220411152936561.png)
+   ![image-20230427135212621](markdown-assets/image-20230427135212621.png)
    ![image-20220426155346545](markdown-assets/image-20220426155346545.png)
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
    * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments. Falls Sie dazu weitere Hilfe benötigen, siehe [weitere Hilfe](#weitere-hilfe).
@@ -100,7 +100,7 @@ Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möc
 
 Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
-![image-20220411153302297](markdown-assets/image-20220411153302297.png)
+![image-20230427135429661](markdown-assets/image-20230427135429661.png)
 
 
 
