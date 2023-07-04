@@ -220,7 +220,7 @@ Anschließend pflegen Sie die dortigen Felder und bestätigen das mit einem Klic
 
 ### Zertifizierung
 
-Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind, ist vor Übertragung auf das Live-System eine Zertifizierung notwendig. Mehr Informationen dazu finden Sie im [Amt24 Wiki Artikel "Einreichung von Zertifizierungsanfragen"](https://wiki.amt24.sachsen.de/bin/view/Zertifizierungen/Einreichung%20von%20Zertifizierungsanfragen/).
+Wenn Sie den Prozess ausgiebig testen konnten und mit ihm zufrieden sind, ist vor Übertragung auf das Live-System eine Zertifizierung notwendig. Mehr Informationen dazu finden Sie im [Artikel "Einreichung von Anfragen zur technischen Revision" auf der Dokumentation für Online-Dienste-Hersteller](https://doku.pmp.seitenbau.com/display/DFO/Einreichung+von+Anfragen+zur+technischen+Revision).
 
 ### Übertragung auf das Live-System
 
