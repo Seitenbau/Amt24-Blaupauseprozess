@@ -119,7 +119,14 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ### Neuen Prozess mit Blaupauseassistent erstellen
 
-TODO!
+Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
+
+![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](assistent-starten.png)
+
+Sie werden nun erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch ins
+Admincenter angemeldet haben. Anschließend wird Sie der Assistent durch die benötigten Schritte führen. Bitte beachten
+Sie, dass Sie den Assistenten innerhalb von 8 Stunden durchlaufen haben müssen (falls Sie dieses Limit überschreiben,
+können Sie den Assistenten aber einfach erneut starten).
 
 ## Prozess testen
 
