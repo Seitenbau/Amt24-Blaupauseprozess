@@ -138,11 +138,11 @@ TODO!
 
 ### Übertragung auf das Live-System
 
-Sind Sie soweit, dass Ihr Prozess produktiv eingesetzt werden kann? Dann schicken Sie dazu eine Mail mit der Bitte zur Übernahme des Prozesses auf das Produktivsystem an den SID: [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de). Nennen Sie dabei bitte Ihren Mandanten, den Namen des Prozesses, sowie den Namen Ihres Formulars.
+Sind Sie so weit, dass Ihr Prozess produktiv eingesetzt werden kann? Dann schicken Sie dazu eine Mail mit der Bitte zur Übernahme des Prozesses auf das Produktivsystem an den SID: [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de). Nennen Sie dabei bitte Ihren Mandanten, den Namen des Prozesses sowie den Namen Ihres Formulars.
 
 ### Prozess auffindbar machen
 
-Nachdem Ihr Prozess durch die SID auf das Live-System übertragen wurde können Sie ihn aktivieren und damit allen Nutzern verfügbar machen. Gehen Sie dazu genau wie im [Prozess testen](#prozess-testen) Abschnitt vor (nur diesmal auf dem Amt24-Livesystem). 
+Nachdem Ihr Prozess durch die SID auf das Live-System übertragen wurde, können Sie ihn aktivieren und damit allen Nutzern verfügbar machen. Gehen Sie dazu genau wie im [Prozess testen](#prozess-testen) Abschnitt vor (nur dieses Mal auf dem Amt24-Livesystem). 
 
 Herzlichen Glückwunsch, Sie haben nun alle Schritte durchgeführt und einen wichtigen Teil zur Digitalisierung der öffentlichen Verwaltung beigetragen! 🥳
 
