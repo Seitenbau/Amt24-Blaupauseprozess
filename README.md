@@ -153,7 +153,14 @@ Feedback bitten.
 
 ### Formular zertifizieren
 
-TODO!
+Wenn Sie an Ihrem Formular keine Änderungen mehr durchführen möchten, können Sie es automatisch zertifizieren. Dieser
+Schritt ist notwendig, da alle Formulare, die auf das Amt24-Live-system übertragen werden, zuvor geprüft werden müssen.
+
+Bei dieser automatischen Zertifizierung werden strengere Kriterien angelegt, als bei der "normalen Zertifizierung", die
+Sie z. B. von anderen Prozessen kennen. Falls Ihr Formular diese Kriterien bereits erfüllt wird es direkt zertiziert.
+Andernfalls erhalten Sie eine entsprechende Fehlermeldung, welche die notwendigen Anpassungen beschreibt.
+
+![Navigieren Sie über "Verfahrengsmanagement", "Formulare", wählen Sie Ihre Formular aus der Liste, dann die entsprechende Version und klicken Sie dann auf "Formular zertifizieren"](markdown-assets/formular-zertifizieren.png)
 
 ### Übertragung auf das Live-System
 
