@@ -143,7 +143,8 @@ diesen bei der Suche an.
 
 ![image-20220412143516417](markdown-assets/leistung-suchen.png)
 
-Starten Sie den Prozess über den hervorgehobenen Button:
+Starten Sie den Prozess über den blauen Button. Beachten Sie, dass es einige Zeit (i.d.R. 0 - 15 Minuten) dauern kann,
+bis der Button angezeigt wird.
 
 ![image-20220412144416923](markdown-assets/prozess-starten.png)
 
