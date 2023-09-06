@@ -188,6 +188,7 @@ Herzlichen Glückwunsch, Sie haben nun alle Schritte durchgeführt und einen wic
 
 ## Weitere Hilfe
 
-SEITENBAU bietet (kostenpflichtige) Unterstützung bei individuellen Fragen zur Modellierung und zum Formulardesign.
-Ebenfalls werden Schulungen und die Umsetzung kompletter Anträge angeboten. Bei Interesse können Sie eine Mail an
-public-service@seitenbau.com schicken.
+Wenn Sie Fragen rund um die Nutzung der Blaupause und des Blaupause-Assistenten haben, wenden Sie sich bitte an die 
+Amt24-Anwendungsbetreuung unter servicedesk@sid.sachsen.de. Auch SEITENBAU bietet (kostenpflichtige) Unterstützung bei 
+individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter 
+Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
