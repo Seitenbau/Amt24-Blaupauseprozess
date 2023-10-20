@@ -121,7 +121,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
 
-![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](assistent-starten.png)
+![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](markdown-assets/assistent-starten.png)
 
 Sie werden nun erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch ins
 AdminCenter angemeldet haben. Anschließend wird Sie der Assistent durch die benötigten Schritte führen. Bitte beachten
