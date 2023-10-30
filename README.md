@@ -142,7 +142,7 @@ Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter, also sol
 Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme oder 
 Fragen haben, die sich auf die Bezahlfunktion beschränken ist auch hier der SID der richtige Supportkanal.
 
-![img.png](prozessparameter-bei-payment.png)
+![img.png](markdown-assets/prozessparameter-bei-payment.png)
 
 Ihr Prozess kann nun auf der Entwicklungsumgebung aufgerufen werden. Öffnen Sie
 das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
