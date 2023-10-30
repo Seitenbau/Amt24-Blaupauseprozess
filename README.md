@@ -136,6 +136,14 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412144130090](markdown-assets/prozess-aktivieren-step-2.png)
 
+Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen 
+können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das 
+Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter, also solche welche verwendet werden, um Ihr
+Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme oder 
+Fragen haben, die sich auf die Bezahlfunktion beschränken ist auch hier der SID der richtige Supportkanal.
+
+![img.png](prozessparameter-bei-payment.png)
+
 Ihr Prozess kann nun auf der Entwicklungsumgebung aufgerufen werden. Öffnen Sie
 das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
 Zuständigkeiten (siehe Abschnitt [Voraussetzungen](#voraussetzungen)) einen Ort eingeschränkt haben, geben Sie auch
