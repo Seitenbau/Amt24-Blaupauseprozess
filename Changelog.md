@@ -11,6 +11,7 @@ Deployt am: voraussichtlich Ende November 2023
 - Für einen Prozess kann die Bezahlung aktiviert.
   - So erstelle Prozesse verfügen über die neuen Prozessparameter `ePayBL-keystore`, `ePayBL-keystorePassword`, `ePayBL-mandant`, `ePayBL-bewirtschafter`, `ePayBL-haushaltsstelle`, `ePayBL-objektnummer`, `ePayBL-kennzeichenMahnverfahren`, `ePayBL-frist`, `ePayBL-betrag` und `ePayBL-verwendungszweck`
 - Das "Review"-Formular verfügt über eine extra Hint-Box, welche die nächsten Schritte beschreibt (Bezahlung oder Einreichung des Antrags direkt).
+- Bugfix: Uploads aus Multiupload-Felder werden korrekt in die Anhänge der Servicekonto-Nachrichten hinzugefügt. 
 
 ## Version 1.0
 
