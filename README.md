@@ -138,9 +138,9 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen 
 können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das 
-Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter, also solche welche verwendet werden, um Ihr
-Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme oder 
-Fragen haben, die sich auf die Bezahlfunktion beschränken ist auch hier der SID der richtige Supportkanal.
+Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um 
+Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme
+oder Fragen haben, die sich auf die Bezahlfunktion beschränken ist auch hier der SID der richtige Supportkanal.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
 

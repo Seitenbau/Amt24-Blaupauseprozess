@@ -8,8 +8,8 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 Deployt am: voraussichtlich Ende November 2023
 
 - Der Blaupause-Assistent verwendet nun die öffentliche [Scripting-API v1](https://doku.pmp.seitenbau.com/display/DFO/Scripting-API+v1)  anstelle von internen Klassen.
-- Für einen Prozess kann die Bezahlung aktiviert.
-  - So erstelle Prozesse verfügen über die neuen Prozessparameter `ePayBL-keystore`, `ePayBL-keystorePassword`, `ePayBL-mandant`, `ePayBL-bewirtschafter`, `ePayBL-haushaltsstelle`, `ePayBL-objektnummer`, `ePayBL-kennzeichenMahnverfahren`, `ePayBL-frist`, `ePayBL-betrag` und `ePayBL-verwendungszweck`
+- Für einen Prozess kann die Bezahlung aktiviert werden.
+  - So erstellte Prozesse verfügen über die neuen Prozessparameter `ePayBL-keystore`, `ePayBL-keystorePassword`, `ePayBL-mandant`, `ePayBL-bewirtschafter`, `ePayBL-haushaltsstelle`, `ePayBL-objektnummer`, `ePayBL-kennzeichenMahnverfahren`, `ePayBL-frist`, `ePayBL-betrag` und `ePayBL-verwendungszweck`
 - Das "Review"-Formular verfügt über eine extra Hint-Box, welche die nächsten Schritte beschreibt (Bezahlung oder Einreichung des Antrags direkt).
 - Bugfix: Uploads aus Multiupload-Felder werden korrekt in die Anhänge der Servicekonto-Nachrichten hinzugefügt. 
 
