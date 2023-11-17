@@ -33,6 +33,7 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 1. Ausfüllen eines konfigurierbaren Formulars, inkl. Validierung.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
+1. (Optional) Online-Bezahlung über ePayBL 
 1. "Antrag eingereicht" Nachricht an Servicekonto der Antragsstellenden.
 1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei
    zwischen:
@@ -46,6 +47,8 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
 
 ### Voraussetzungen
+* Falls Sie die Bezahlfunktion nutzen möchten, müssen Sie einen entsprechenden Mandanten beim SID unter
+  [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de) beantragen. Dies kann mehrere Wochen dauern.
 
 * Sie haben Zugriff auf das AdminCenter des Amt24-Entwicklungssystem https://admincenter.amt24dev.sachsen.de.
     * Sie sind dort für Ihren gewünschten Mandanten (d. h. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
@@ -140,9 +143,16 @@ Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die 
 können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das 
 Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um 
 Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme
-oder Fragen haben, die sich auf die Bezahlfunktion beschränken ist auch hier der SID der richtige Supportkanal.
+oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
+
+Bitte aktivieren Sie für den Prozessparameter `ePayBL-keystorePassword` die Funktion `Wert schützen` (1). Damit wird der 
+Wert später nicht mehr angezeigt (2) und kann dadurch nicht von anderen Personen kopiert werden:
+
+![wert-schuetzen-funktion.png](markdown-assets%2Fwert-schuetzen-funktion.png)
+
+Beachten Sie bitte, dass auf dem Amt24-Dev-System und dem Amt24-Live-System unterschiedliche Daten zu verwenden sind.
 
 Ihr Prozess kann nun auf der Entwicklungsumgebung aufgerufen werden. Öffnen Sie
 das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
