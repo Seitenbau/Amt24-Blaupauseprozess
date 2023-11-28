@@ -33,6 +33,7 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 1. Ausfüllen eines konfigurierbaren Formulars, inkl. Validierung.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
+1. (Optional) Online-Bezahlung über ePayBL 
 1. "Antrag eingereicht" Nachricht an Servicekonto der Antragsstellenden.
 1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei
    zwischen:
@@ -46,6 +47,8 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
 
 ### Voraussetzungen
+* Falls Sie die Bezahlfunktion nutzen möchten, müssen Sie einen entsprechenden Mandanten beim SID unter
+  [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de) beantragen. Dies kann mehrere Wochen dauern.
 
 * Sie haben Zugriff auf das AdminCenter des Amt24-Entwicklungssystem https://admincenter.amt24dev.sachsen.de.
     * Sie sind dort für Ihren gewünschten Mandanten (d. h. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
@@ -121,7 +124,7 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
 
-![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](assistent-starten.png)
+![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](markdown-assets/assistent-starten.png)
 
 Sie werden nun erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch ins
 AdminCenter angemeldet haben. Anschließend wird Sie der Assistent durch die benötigten Schritte führen. Bitte beachten
@@ -135,6 +138,21 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 ![image-20220412143847497](markdown-assets/prozess-aktivieren-step-1.png)
 
 ![image-20220412144130090](markdown-assets/prozess-aktivieren-step-2.png)
+
+Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen 
+können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das 
+Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um 
+Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme
+oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner.
+
+![img.png](markdown-assets/prozessparameter-bei-payment.png)
+
+Bitte aktivieren Sie für den Prozessparameter `ePayBL-keystorePassword` die Funktion `Wert schützen` (1). Damit wird der 
+Wert später nicht mehr angezeigt (2) und kann dadurch nicht von anderen Personen kopiert werden:
+
+![wert-schuetzen-funktion.png](markdown-assets%2Fwert-schuetzen-funktion.png)
+
+Beachten Sie bitte, dass auf dem Amt24-Dev-System und dem Amt24-Live-System unterschiedliche Daten zu verwenden sind.
 
 Ihr Prozess kann nun auf der Entwicklungsumgebung aufgerufen werden. Öffnen Sie
 das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
@@ -192,3 +210,7 @@ Wenn Sie Fragen rund um die Nutzung der Blaupause und des Blaupause-Assistenten 
 Amt24-Anwendungsbetreuung unter servicedesk@sid.sachsen.de. Auch SEITENBAU bietet (kostenpflichtige) Unterstützung bei 
 individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter 
 Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
+
+## Changelog
+
+Alle Änderungen und die Versionen des Blaupause-Assistenten finden Sie im [Changelog](Changelog.md)
