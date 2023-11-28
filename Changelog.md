@@ -5,7 +5,7 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 ## Version 1.1
 
-Deployt am: voraussichtlich Ende November 2023
+Deployt am: 2023-11-28
 
 - Der Blaupause-Assistent verwendet nun die öffentliche [Scripting-API v1](https://doku.pmp.seitenbau.com/display/DFO/Scripting-API+v1)  anstelle von internen Klassen.
 - Für einen Prozess kann die Bezahlung aktiviert werden.
