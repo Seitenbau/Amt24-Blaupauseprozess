@@ -2,18 +2,18 @@
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-- [Amt24 - Blaupause-Prozess](#amt24---blaupause-prozess)
-    * [Funktionsumfang](#funktionsumfang)
-    * [Erstellen eines Blaupause-Prozesses](#erstellen-eines-blaupause-prozesses)
-        + [Voraussetzungen](#voraussetzungen)
-        + [Formular einrichten](#formular-einrichten)
-        + [Neuen Prozess mit Blaupauseassistent erstellen](#neuen-prozess-mit-blaupauseassistent-erstellen)
-    * [Prozess testen](#prozess-testen)
-    * [Prozess allen Nutzern verfügbar machen](#prozess-allen-nutzern-verfügbar-machen)
-        + [Formular zertifizieren](#formular-zertifizieren)
-        + [Übertragung auf das Live-System](#übertragung-auf-das-live-system)
-        + [Prozess auffindbar machen](#prozess-auffindbar-machen)
-    * [Weitere Hilfe](#weitere-hilfe)
+- [Funktionsumfang](#funktionsumfang)
+- [Erstellen eines Blaupause-Prozesses](#erstellen-eines-blaupause-prozesses)
+    * [Voraussetzungen](#voraussetzungen)
+    * [Formular einrichten](#formular-einrichten)
+    * [Neuen Prozess mit Blaupauseassistent erstellen](#neuen-prozess-mit-blaupauseassistent-erstellen)
+- [Prozess testen](#prozess-testen)
+- [Prozess allen Nutzern verfügbar machen](#prozess-allen-nutzern-verfügbar-machen)
+    * [Formular zertifizieren](#formular-zertifizieren)
+    * [Übertragung auf das Live-System](#übertragung-auf-das-live-system)
+    * [Prozess auffindbar machen](#prozess-auffindbar-machen)
+- [Weitere Hilfe](#weitere-hilfe)
+- [Changelog](#changelog)
 
 <!-- TOC end -->
 
@@ -33,7 +33,7 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 1. Ausfüllen eines konfigurierbaren Formulars, inkl. Validierung.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
-1. (Optional) Online-Bezahlung über ePayBL 
+1. (Optional) Online-Bezahlung über ePayBL
 1. "Antrag eingereicht" Nachricht an Servicekonto der Antragsstellenden.
 1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei
    zwischen:
@@ -139,15 +139,15 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412144130090](markdown-assets/prozess-aktivieren-step-2.png)
 
-Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen 
-können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das 
-Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um 
+Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
+können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das
+Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um
 Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme
 oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
 
-Bitte aktivieren Sie für den Prozessparameter `ePayBL-keystorePassword` die Funktion `Wert schützen` (1). Damit wird der 
+Bitte aktivieren Sie für den Prozessparameter `ePayBL-keystorePassword` die Funktion `Wert schützen` (1). Damit wird der
 Wert später nicht mehr angezeigt (2) und kann dadurch nicht von anderen Personen kopiert werden:
 
 ![wert-schuetzen-funktion.png](markdown-assets%2Fwert-schuetzen-funktion.png)
@@ -206,9 +206,9 @@ Herzlichen Glückwunsch, Sie haben nun alle Schritte durchgeführt und einen wic
 
 ## Weitere Hilfe
 
-Wenn Sie Fragen rund um die Nutzung der Blaupause und des Blaupause-Assistenten haben, wenden Sie sich bitte an die 
-Amt24-Anwendungsbetreuung unter servicedesk@sid.sachsen.de. Auch SEITENBAU bietet (kostenpflichtige) Unterstützung bei 
-individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter 
+Wenn Sie Fragen rund um die Nutzung der Blaupause und des Blaupause-Assistenten haben, wenden Sie sich bitte an die
+Amt24-Anwendungsbetreuung unter servicedesk@sid.sachsen.de. Auch SEITENBAU bietet (kostenpflichtige) Unterstützung bei
+individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter
 Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
 
 ## Changelog
