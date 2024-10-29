@@ -3,24 +3,24 @@
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
 - [Funktionsumfang](#funktionsumfang)
-- [Erstellen eines Blaupause-Prozesses](#erstellen-eines-blaupause-prozesses)
-    * [Voraussetzungen](#voraussetzungen)
+- [Voraussetzungen zur Nutzung der Blaupause](#voraussetzungen-zur-nutzung-der-blaupause)
+- [Wie erstelle ich einen Prozess mit dem Blaupauseassistenten?](#wie-erstelle-ich-einen-prozess-mit-dem-blaupauseassistenten)
     * [Formular einrichten](#formular-einrichten)
     * [Neuen Prozess mit Blaupauseassistent erstellen](#neuen-prozess-mit-blaupauseassistent-erstellen)
-- [Prozess testen](#prozess-testen)
-- [Prozess allen Nutzern verfügbar machen](#prozess-allen-nutzern-verfügbar-machen)
+- [Wie kann ich meinen Prozess testen?](#wie-kann-ich-meinen-gebauten-Prozess-testen)
+	* [Prozess aktivieren](#prozess-aktivieren)
+	* [Prozess testen](#prozess-testen)
+- [Wie mache ich den Prozess allen Antragsberechtigten verfügbar?](#wie-mache-ich-den-prozess-allen-antragsberechtigten-verfügbar)
     * [Formular zertifizieren](#formular-zertifizieren)
-    * [Übertragung auf das Live-System](#übertragung-auf-das-live-system)
+    * [Übertragung auf das Produktivsystem](#übertragung-auf-das-produktivsystem)
     * [Prozess auffindbar machen](#prozess-auffindbar-machen)
 - [Weitere Hilfe](#weitere-hilfe)
 - [Changelog](#changelog)
 
 <!-- TOC end -->
 
-Der Blaupause-Prozess ist eine Vorlage, mit der Kommunen, Landratsämter, Ministerien und andere öffentliche
-Einrichtungen möglichst schnell und einfach ihre Anträge auf Amt24 bereitstellen können. Seine Verwendung richtet sich
-dabei auch speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder nur die
-Formular-Funktion von Amt24 verwenden möchten.
+Der Blaupause-Prozess ist eine Vorlage, die dazu dient, möglichst schnell und einfach Anträge auf Amt24 bereitstellen zu können. 
+Seine Verwendung richtet sich dabei speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder lediglich das Layout der Formular-Funktion von Amt24 verwenden möchten.
 
 ## Funktionsumfang
 
@@ -28,9 +28,9 @@ Formular-Funktion von Amt24 verwenden möchten.
 
 Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierenden diese Schritte:
 
-1. Bestimmung des zuständigen Sachbearbeiters / Behördenkontos (anhand der konfigurierten Organisationseinheit).
+1. Bestimmung des zuständigen Behördenkontos (anhand der konfigurierten Organisationseinheit).
 1. Login des Antragsstellers mit einem Amt24-Servicekonto.
-1. Ausfüllen eines konfigurierbaren Formulars, inkl. Validierung.
+1. Ausfüllen eines konfigurierbaren Formulars.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
 1. (Optional) Online-Bezahlung über ePayBL
@@ -42,39 +42,41 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
     1. PDF
 1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit mit den gewählten Datenformaten.
 
-## Erstellen eines Blaupause-Prozesses
+## Voraussetzungen zur Nutzung der Blaupause
 
-Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
-
-### Voraussetzungen
-* Falls Sie die Bezahlfunktion nutzen möchten, müssen Sie einen entsprechenden Mandanten beim SID unter
-  [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de) beantragen. Dies kann mehrere Wochen dauern.
-
-* Sie haben Zugriff auf das AdminCenter des Amt24-Entwicklungssystem https://admincenter.amt24dev.sachsen.de.
+- Falls Sie die Bezahlfunktion nutzen möchten, müssen Sie einen entsprechenden Mandanten beim SID unter [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de) beantragen. Dies kann mehrere Wochen dauern.
+- Sie haben Zugriff auf das AdminCenter des Amt24-Entwicklungssystem https://admincenter.amt24dev.sachsen.de.
     * Sie sind dort für Ihren gewünschten Mandanten (d. h. Ihre Kommune/Landratsamt/Behörde) freigeschaltet.
-    * Sie sind den Benutzergruppen `Mandantenredakteur Behörden und Zuständigkeiten` und `Prozessassistent - Nutzer`
-      zugeordnet
-
-* In Ihrem gewünschten Mandanten sind die Daten zum Bild, Datenschutzbeauftragten und zum Impressum gepflegt:
+    * Sie sind den Benutzergruppen `Mandantenredakteur Behördenkontenverwalter. Mandantenredakteur Behörden und Zuständigkeiten` und `Prozessassistent - Nutzer`
+      zugeordnet.
+Bitte beachten Sie, dass die Benutzergruppe Prozessassistent-Nutzer nur nach Besuch einer Schulung bereitgestellt wird.
+- In Ihrem gewünschten Mandanten sind die Daten zum Bild, Datenschutzbeauftragten und Impressum gepflegt:
   ![image-20220517113909629](markdown-assets/pflege-mandantendetails.png)
 
-* Es existiert bereits ein Behörden- oder Organisationskonto, welches die Antragsdaten empfangen soll.
+- Es existiert bereits ein Behördenkonto, welches die Antragsdaten empfangen soll.
 
-* Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
+- Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
 
-    * Diese Organisationseinheit hat eine "Kommunikation" mit dem Kanal "Servicekonto" gepflegt, welches auf das obige
-      Behörden-/Organisationskonto verweist:
+    * Diese Organisationseinheit hat eine "Kommunikation" mit dem Kanal "Servicekonto" gepflegt, welches auf ein existierendes Behördenkonto zur Antragsannahme verweist: 
       ![image-20220412143133537](markdown-assets/navigation-zu-kommunikation.png)
 
       ![image-20220412142045658](markdown-assets/verfikation-servicekonto-kommunikationskanal.png)
+	  
+	  Detaillierte Informationen, wie ein Blaupause-Prozess das Behörden/Organisationskonto bestimmt, finden Sie
+im [User Guide: Bestimmung des zuständigen Sachbearbeiters](./User_Guide_Bestimmung_zustaendiger_Sachbearbeiter.md)
 
-* Es existiert bereits eine Leistung, in deren Kontext der Prozess aufrufbar sein soll.
+- Es existiert bereits eine Leistung, in deren Kontext der Prozess aufrufbar sein soll.
 
     * Die Leistung hat eine "Zuständigkeit" gepflegt, welche die obige Organisationseinheit referenziert.
       ![image-20220412143021555](markdown-assets/navigation-zu-zustaendigkeiten.png)
 
-Detaillierte Informationen, wie ein Blaupause-Prozess das Behörden/Organisationskonto bestimmt, finden Sie
-im [User Guide: Bestimmung des zuständigen Sachbearbeiters](./User_Guide_Bestimmung_zustaendiger_Sachbearbeiter.md)
+
+
+
+## Wie erstelle ich einen Prozess mit dem Blaupauseassistenten?
+
+Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müssen Sie folgende Punkte durchführen.
+
 
 ### Formular einrichten
 
@@ -92,25 +94,23 @@ folgendermaßen vor:
    Underscore `_`.
     1. Ihre Organisation
     1. Dem Namen des Prozesses
-    1. Einer Bezeichnung, dass es sich hierbei um das Antragstellendenformular (und nicht z. B. um ein Prüfformular, oder
-       das Formular der Sachbearbeitung handelt).
-    1. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
+    1. Einer Bezeichnung, dass es sich hierbei um das Formular für Antragsstellenden (und nicht z. B. um ein Prüfformular, oder
+       das Formular der Sachbearbeitung handelt). z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
    ![image-20230427135212621](markdown-assets/formular-importieren.png)
    ![image-20220426155346545](markdown-assets/formular-importieren-schritt-2.png)
 1. Sie können das Formular nun über den `Datei bearbeiten` Button bearbeiten.
     * Eine Anleitung zum Erstellen von Formularen ist nicht Bestandteil dieses Dokuments. Falls Sie dazu weitere Hilfe
       benötigen, siehe [weitere Hilfe](#weitere-hilfe).
-    * Falls Sie später eine Datenübertragung als XML-Datei beabsichtigen: Beachten Sie bitte, dass Sie für das `ID`
+	  
+	  Falls Sie später eine Datenübertragung als XML-Datei beabsichtigen: Beachten Sie bitte, dass Sie für das `ID`
       Attribut eines jeden Formularfelds und jeder Formulargruppe einen sprechenden Namen verwenden und nicht die
       automatisch generierten IDs benutzten. Die sprechenden Namen müssen
-      den [XML-Element Namensregeln](https://stackoverflow.com/a/31130882) entsprechen. Wir empfehlen die Verwendung
-      von camelCase.
+      den [XML-Element Namensregeln](https://stackoverflow.com/a/31130882) entsprechen. 
+	  Wir empfehlen den Verzicht auf Trennzeichen und das Zusammenziehen der Wörter anhand Groß-/Kleinschreibung. Bsp: statt Formular_Feld_ID → FormularFeldID
 
-Falls Sie bereits ein Formular erstellt haben oder nicht die Vorlage nutzen möchten, prüfen Sie bitte, ob eine
-eingehende und ausgehende Anbindung an die Prozessinstanzvariable `applicantForm` besteht (in dieser Variable erwartet
-der Prozess die Formulardaten). Sie können dies im Formulardesigner sehen, nachdem Sie das oberste Element angeklickt
-haben:
+Sofern Sie bereits ein eigenes Formular (ohne die Vorlage) erstellt haben, überprüfen Sie bitte, ob eine ein- und ausgehende Anbindung an die Prozessinstanzvariable applicantForm besteht (in dieser Variable erwartet der Prozess die Formulardaten). 
+Klicken Sie dazu im Formulardesigner auf das oberste Element und wählen das Zahnrad für die Einstellungen:
 
 ![image-20220426155859315](markdown-assets/navigation-zu-formularanbindung.png)
 
@@ -126,13 +126,12 @@ Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
 
 ![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](markdown-assets/assistent-starten.png)
 
-Sie werden nun erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch ins
-AdminCenter angemeldet haben. Anschließend wird Sie der Assistent durch die benötigten Schritte führen. Bitte beachten
-Sie, dass Sie den Assistenten innerhalb von 8 Stunden durchlaufen haben müssen (falls Sie dieses Limit überschreiten,
-können Sie den Assistenten aber einfach erneut starten).
+Sie werden jetzt erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch im AdminCenter angemeldet haben. 
+Anschließend führt Sie der Assistent durch die notwendigen Schritte. Bitte beachten Sie, dass Sie den Assistenten innerhalb von 8 Stunden durchlaufen haben müssen (falls Sie dieses Limit überschreiten, können Sie den Assistenten aber einfach erneut starten).
 
-## Prozess testen
+## Wie kann ich meinen gebauten Prozess testen?
 
+### Prozess aktivieren
 Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412143847497](markdown-assets/prozess-aktivieren-step-1.png)
@@ -142,7 +141,7 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
 können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das
 Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um
-Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter zv@sid.sachsen.de. Falls Sie Probleme
+Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter [zv@sid.sachsen.de](mailto:zv@sid.sachsen.de). Falls Sie Probleme
 oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
@@ -152,10 +151,12 @@ Wert später nicht mehr angezeigt (2) und kann dadurch nicht von anderen Persone
 
 ![wert-schuetzen-funktion.png](markdown-assets%2Fwert-schuetzen-funktion.png)
 
-Beachten Sie bitte, dass auf dem Amt24-Dev-System und dem Amt24-Live-System unterschiedliche Daten zu verwenden sind.
+Beachten Sie bitte, dass auf dem Amt24-Entwicklungssystem und dem Amt24-Produktivsystem unterschiedliche Daten zu verwenden sind.
+
+### Prozess testen
 
 Ihr Prozess kann nun auf der Entwicklungsumgebung aufgerufen werden. Öffnen Sie
-das [Amt24-Dev-System](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
+das [Amt24-Entwicklungssystem](https://amt24dev.sachsen.de) und suchen Sie nach Ihrem Prozess. Falls Sie in den
 Zuständigkeiten (siehe Abschnitt [Voraussetzungen](#voraussetzungen)) einen Ort eingeschränkt haben, geben Sie auch
 diesen bei der Suche an.
 
@@ -166,50 +167,43 @@ bis der Button angezeigt wird.
 
 ![image-20220412144416923](markdown-assets/prozess-starten.png)
 
-Falls Sie auf Fehlermeldungen wie `Die Liste der Aufgaben konnte nicht abgerufen werden.` stoßen, öffnen Sie wieder das
-AdminCenter und prüfen Sie die Prozesslogs. Die dort stehenden Fehlermeldungen helfen Ihnen eventuell bei der
-Fehlersuche:
+Falls Sie auf Fehlermeldungen, wie bspw. `die Liste der Aufgaben konnte nicht abgerufen werden.` stoßen, öffnen Sie wieder das AdminCenter und prüfen Sie die Prozesslogs. Die dort stehenden Fehlermeldungen helfen Ihnen eventuell bei der Fehlersuche:
 
 ![image-20220412144823264](markdown-assets/navigieren-zu-prozesslogs.png)
 
-Testen Sie Ihren Prozess nun gut und ausführlich. Eventuell möchten Sie auch Ihre Kolleg*innen oder auch Bürger*innen um
-Feedback bitten.
+Testen Sie Ihren Prozess nun gut und ausführlich. Das bedeutet, dass Sie einmal die komplette Antragsstrecke vom Start des Antrags bis zum Eingang bei der zuständigen Behörde testen müssen. Eventuell möchten Sie auch andere Personen um weiteres Feedback bitten.
 
-## Prozess allen Nutzern verfügbar machen
+
+## Wie mache ich den Prozess allen Antragsberechtigten verfügbar?
 
 ### Formular zertifizieren
 
-Wenn Sie an Ihrem Formular keine Änderungen mehr durchführen möchten, können Sie es automatisch zertifizieren. Dieser
-Schritt ist notwendig, da alle Formulare, die auf das Amt24 Livesystem übertragen werden, zuvor geprüft werden müssen.
+Wenn Sie an Ihrem Formular keine Änderungen mehr durchführen möchten, können Sie es automatisch zertifizieren. Drücken Sie dafür bei Ihrem Formular auf den Button "Formular zertifizieren". Dieser Schritt ist notwendig, da alle Formulare, die auf das Amt24 Produktivsystem übertragen werden, zuvor zertifiziert werden müssen.
+Falls Ihr Formular die Zertifizierungskriterien nicht erfüllt, erhalten Sie eine entsprechende Fehlermeldung, welche die notwendigen Anpassungen beschreibt. Andernfalls wird das Formular automatisch in den Status Prüfung erfolgreich versetzt.
 
-Bei dieser automatischen Zertifizierung werden strengere Kriterien angelegt, als bei der "normalen Zertifizierung", die
-Sie z. B. von anderen Prozessen kennen. Falls Ihr Formular diese Kriterien bereits erfüllt wird es direkt zertiziert.
-Andernfalls erhalten Sie eine entsprechende Fehlermeldung, welche die notwendigen Anpassungen beschreibt.
 
 ![Navigieren Sie über "Verfahrengsmanagement", "Formulare", wählen Sie Ihre Formular aus der Liste, dann die entsprechende Version und klicken Sie dann auf "Formular zertifizieren"](markdown-assets/formular-zertifizieren.png)
 
-### Übertragung auf das Live-System
+Bitte beachten Sie, sofern Sie Änderungen am Prozessmodell vorgehaben, ist vor Übertragung auf das Produktivsystem eine Zertifizierung notwendig. 
+Mehr Informationen dazu finden Sie im Artikel [Einreichung von Anfragen zur technischen Revision](https://doku.pmp.seitenbau.com/pages/viewpage.action?spaceKey=DFO&title=Einreichung+von+Anfragen+zur+technischen+Revision) auf der Dokumentation für Online-Dienste-Hersteller.
 
-Als nächstes schicken Sie dazu eine Mail mit der Bitte zur
-Übernahme des Prozesses auf das Produktivsystem an die
-SID: [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de). Nennen Sie dabei bitte Ihren Mandanten, den Namen
-des Prozesses sowie den Namen Ihres Formulars.
+### Übertragung auf das Produktivsystem
+
+Nachdem Sie Ihr Formular zertifiziert haben, schicken Sie eine E-Mail mit der Bitte zur Übernahme des Prozesses auf das Produktivsystem an den SID: [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de). 
+Nennen Sie dabei bitte Ihren Mandanten, den Namen und die Version des Prozesses, sowie den Namen und die Version Ihres Formulars.
+
 
 ### Prozess auffindbar machen
 
-Nachdem Ihr Prozess durch die SID auf das Live-System übertragen wurde, können Sie ihn aktivieren und damit allen
-Nutzenden verfügbar machen. Gehen Sie dazu genau wie im [Prozess testen](#prozess-testen) Abschnitt vor (nur dieses Mal
-auf dem Amt24-Livesystem).
+Nachdem Ihr Prozess durch den SID auf das Produktivsystem übertragen wurde, können Sie ihn aktivieren und damit allen Nutzenden verfügbar machen. 
+Gehen Sie dazu genau wie im Abschnitt [Wie kann ich meinen Prozess testen?](#wie-kann-ich-meinen-gebauten-Prozess-testen) vor (nur dieses Mal auf dem Amt24-Produktivsystem).
 
-Herzlichen Glückwunsch, Sie haben nun alle Schritte durchgeführt und einen wichtigen Teil zur Digitalisierung der
-öffentlichen Verwaltung beigetragen! 🥳
+Herzlichen Glückwunsch, Sie haben nun alle Schritte durchgeführt und einen wichtigen Teil zur Digitalisierung der öffentlichen Verwaltung beigetragen! 🥳
+
 
 ## Weitere Hilfe
 
-Wenn Sie Fragen rund um die Nutzung der Blaupause und des Blaupause-Assistenten haben, wenden Sie sich bitte an die
-Amt24-Anwendungsbetreuung unter servicedesk@sid.sachsen.de. Auch SEITENBAU bietet (kostenpflichtige) Unterstützung bei
-individuellen Fragen zur Modellierung und zum Formulardesign. Ebenfalls werden Schulungen und die Umsetzung kompletter
-Anträge angeboten. Bei Interesse können Sie eine Mail an public-service@seitenbau.com schicken.
+Wenn Sie Fragen rund um die Nutzung des Blaupauseassistenten haben, wenden Sie sich bitte an die Amt24-Anwendungsbetreuung unter [servicedesk@sid.sachsen.de](mailto:servicedesk@sid.sachsen.de).
 
 ## Changelog
 
