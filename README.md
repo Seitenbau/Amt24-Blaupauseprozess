@@ -184,7 +184,7 @@ Falls Ihr Formular die Zertifizierungskriterien nicht erfüllt, erhalten Sie ein
 
 ![Navigieren Sie über "Verfahrengsmanagement", "Formulare", wählen Sie Ihre Formular aus der Liste, dann die entsprechende Version und klicken Sie dann auf "Formular zertifizieren"](markdown-assets/formular-zertifizieren.png)
 
-Bitte beachten Sie, sofern Sie Änderungen am Prozessmodell vorgehaben,ist vor Übertragung auf das Produktivsystem eine Zertifizierung notwendig. 
+Bitte beachten Sie, sofern Sie Änderungen am Prozessmodell vorgehaben, ist vor Übertragung auf das Produktivsystem eine Zertifizierung notwendig. 
 Mehr Informationen dazu finden Sie im Artikel [Einreichung von Anfragen zur technischen Revision](https://doku.pmp.seitenbau.com/pages/viewpage.action?spaceKey=DFO&title=Einreichung+von+Anfragen+zur+technischen+Revision) auf der Dokumentation für Online-Dienste-Hersteller.
 
 ### Übertragung auf das Produktivsystem
