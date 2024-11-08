@@ -5,7 +5,7 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 # Version 1.4
 
-Deployt am: **TODO**
+Deployt am: 2024-11-15
 
 - In der Nachricht an die sachbearbeitende Person wird nun die antragstellende Person als Absender vermerkt. Dies erlaubt es, die "Antworten"-Funktion zu nutzen, um in Kontakt mit der antragstellenden Person zu kommen.
 
