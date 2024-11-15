@@ -3,6 +3,12 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+# Version 1.4
+
+Deployt am: 2024-11-15
+
+- In der Nachricht an die sachbearbeitende Person wird nun die antragstellende Person als Absender vermerkt. Dies erlaubt es, die "Antworten"-Funktion zu nutzen, um in Kontakt mit der antragstellenden Person zu kommen.
+
 ## Version 1.3
 
 Deployt am: 2024-08-12
