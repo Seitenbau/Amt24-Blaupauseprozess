@@ -22,6 +22,8 @@
 Der Blaupause-Prozess ist eine Vorlage, die dazu dient, möglichst schnell und einfach Anträge auf Amt24 bereitstellen zu können. 
 Seine Verwendung richtet sich dabei speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder lediglich das Layout der Formular-Funktion von Amt24 verwenden möchten.
 
+Ab dem `Release 1.5` (TODO Datum einfügen) können mit dem Blaupause-Assistenten erstellte Prozesse nur noch für Anträge mit `BundID` und `Mein Unternehmenskonto` genutzt werden.
+
 ## Funktionsumfang
 
 ![sk-blaupausenprozess](markdown-assets/blaupauseprozess-prozessskizze.png)
@@ -29,12 +31,12 @@ Seine Verwendung richtet sich dabei speziell an Personen, die noch keine Erfahru
 Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierenden diese Schritte:
 
 1. Bestimmung des zuständigen Behördenkontos (anhand der konfigurierten Organisationseinheit).
-1. Login des Antragsstellers mit einem Amt24-Servicekonto.
+1. Login des Antragsstellers je nach Konfiguration mit `BundID` oder `Mein Unternehmenskonto`.
 1. Ausfüllen eines konfigurierbaren Formulars.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
 1. (Optional) Online-Bezahlung über ePayBL
-1. "Antrag eingereicht" Nachricht an Servicekonto der Antragsstellenden.
+1. "Antrag eingereicht" Nachricht an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
 1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei
    zwischen:
     1. XML
