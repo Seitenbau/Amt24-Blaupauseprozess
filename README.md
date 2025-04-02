@@ -22,7 +22,7 @@
 Der Blaupause-Prozess ist eine Vorlage, die dazu dient, möglichst schnell und einfach Anträge auf Amt24 bereitstellen zu können. 
 Seine Verwendung richtet sich dabei speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder lediglich das Layout der Formular-Funktion von Amt24 verwenden möchten.
 
-Ab dem `Release 1.5` (TODO Datum einfügen) unterstützt der Blaupause-Assistenten ausschließlich die Generierung von Prozessen mit den Authentifizierungsmitteln `BundID` und `Mein Unternehmenskonto`.
+Ab dem `Release 1.5` (07.04.2025) unterstützt der Blaupause-Assistenten ausschließlich die Generierung von Prozessen mit den Authentifizierungsmitteln `BundID` und `Mein Unternehmenskonto`.
 
 ## Funktionsumfang
 
