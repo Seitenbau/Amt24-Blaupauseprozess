@@ -128,7 +128,7 @@ Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
 
 ![Navigieren Sie über "Verfahrensmanagement" und "Prozessmodelle". Klicken Sie anschließend auf "Assistent starten"](markdown-assets/assistent-starten.png)
 
-Sie werden jetzt erneut zum Login aufgefordert. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch im AdminCenter angemeldet haben. 
+Sie werden jetzt erneut zum Login aufgefordert. Wählen Sie als Option das Amt24 Servicekonto aus. Geben Sie dabei die gleichen Zugangsdaten ein, mit denen Sie sich auch im AdminCenter angemeldet haben.
 Anschließend führt Sie der Assistent durch die notwendigen Schritte. Bitte beachten Sie, dass Sie den Assistenten innerhalb von 8 Stunden durchlaufen haben müssen (falls Sie dieses Limit überschreiten, können Sie den Assistenten aber einfach erneut starten).
 
 ## Wie kann ich meinen gebauten Prozess testen?
