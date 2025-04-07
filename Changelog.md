@@ -3,7 +3,15 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
-# Version 1.4
+## Version 1.5
+
+Deployt am: 2025-04-07
+
+- Es können nun auch neue Versionen eines bestehenden Prozesses (statt nur neue Prozesse) erstellt werden. (Hierbei wird eine nächste Majorversion erzeugt (z.B. Update von Prozessmodell mit Version "v1.1" erhält die Version "v2.0").)
+- Beim Erstellen eines Blaupause-Prozesses kann nun gewählt werden, wie Nutzer sich authentifizieren müssen. Dabei muss mindestens eine der beiden Optionen `Mein Unternehmenskonto` oder `BundId` ausgewählt werden. Mögliche verschickte Nachrichten werden in das jeweilige Postfach der Authentifizierungsoption gesendet.
+- Falls das angebundene Formular Daten auf Vertrauensniveaus abfragt, können diese nun beim Erstellen des Blaupause-Prozesses angegeben werden. Dadurch werden die Metadaten des Prozesses entsprechend gesetzt, was eine doppelte Loginaufforderung verhindert.
+
+## Version 1.4
 
 Deployt am: 2024-11-15
 
