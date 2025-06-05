@@ -7,9 +7,41 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 Deployt am: ???
 
-- Der Wortlaut wurde im Blaupauseassistenten und in der Blaupause generalisiert.
-- Beim Blaupauseassistenten wurden die .xml und .csv Antragszusammenfassung um Metadaten erweitert. Nun sind zusätzlich folgende Daten vorhanden: `PostfachhandleId` (aus BundID & MUK), `Formularname und Formularversion`, `Generierungszeitpunkt` (im ISO-8601 Format) und die `PDF Antragszusammenfassung` (als Base64-codierter String). Durch diese Anpassung kommt es bei der generierten .xml Datei zu einer Umstrukturierung der Elemente.
-- Die Metadaten für die `postfachHandleId` schaffen eine implizite Abhängigkeit zu BundID und MUK. 
+- Der Wortlaut wurde im Blaupauseassistenten und in der Blaupause generalisiert (Statt "Antrag" wird nun "Online-Dienst" oder "Anliegen" verwendet.).
+- Beim Blaupauseassistenten wurden die .xml und .csv Antragszusammenfassung um Metadaten erweitert. Nun sind zusätzlich folgende Daten vorhanden: `PostfachhandleId` (aus BundID & MUK), `Formularname und Formularversion`, `Generierungszeitpunkt` (im ISO-8601 Format) und die `PDF Antragszusammenfassung` (als Base64-codierter String). 
+  - Durch die Erweiterung der Metadaten kommt es bei der generierten .xml Datei zu einer Umstrukturierung der Elemente. Die folgenden Beispiele zeigen die Änderungen: 
+
+  Vorher:
+  ```
+  <serviceportal-fields>
+  <blaupauseGroup>
+  <instance_0>
+  <multiupload/>
+  <testField>Testfield</testField>
+  </instance_0>
+  </blaupauseGroup>
+  </serviceportal-fields>
+  ```
+  Nachher:
+  ```
+  <serviceportal>
+  <metadata>
+  <formId>6000663:Blaupause-Testformular:v1.0</formId>
+  <postfachHandleId>Id des PostfachHandles</postfachHandleId>
+  <pdfApplicantFormBase64>Base64 codierter String</pdfApplicantFormBase64>
+  <creationDate>aktuelles Datum</creationDate>
+  </metadata>
+  <serviceportal-fields>
+  <blaupauseGroup>
+  <instance_0>
+  <multiupload/>
+  <testField>Testfield</testField>
+  </instance_0>
+  </blaupauseGroup>
+  </serviceportal-fields>
+  </serviceportal>
+  ```
+  - Zusätzlich schaffen die Metadaten für die `postfachHandleId` eine implizite Abhängigkeit zu BundID und MUK. 
 - Im Blaupauseassistenten können nun in Bereich Datenschutzerklärung unter der Angabe zur "Verpflichtung zur Datenbereitstellung" individuelle Texte angegeben werden.
 
 ## Version 1.5
