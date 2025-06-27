@@ -5,7 +5,7 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 ## Version 1.6
 
-Deployt am: ???
+Deployt am: 2025-06-30
 
 - Der Wortlaut wurde im Blaupauseassistenten und in der Blaupause generalisiert (Statt "Antrag" wird nun "Online-Dienst" oder "Anliegen" verwendet.).
 - Beim Blaupauseassistenten wurden die .xml und .csv Antragszusammenfassung um Metadaten erweitert. Nun sind zusätzlich folgende Daten vorhanden: `PostfachhandleId` (aus BundID & MUK), `Formularname und Formularversion`, `Generierungszeitpunkt` (im ISO-8601 Format) und die `PDF Antragszusammenfassung` (als Base64-codierter String). 
@@ -41,7 +41,6 @@ Deployt am: ???
   </serviceportal-fields>
   </serviceportal>
   ```
-  - Zusätzlich schaffen die Metadaten für die `postfachHandleId` eine implizite Abhängigkeit zu BundID und MUK. 
 - Im Blaupauseassistenten können nun in Bereich Datenschutzerklärung unter der Angabe zur "Verpflichtung zur Datenbereitstellung" individuelle Texte angegeben werden.
 
 ## Version 1.5
