@@ -122,6 +122,8 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ![image-20230427135429661](markdown-assets/formular-deployen.png)
 
+Achten Sie bitte für die Erstellung von benutzerfreundlichen Formularen auf die [Guidelines](https://serviceportal-machbar.de/guidelines/formulare/).
+
 ### Neuen Prozess mit Blaupauseassistent erstellen
 
 Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
