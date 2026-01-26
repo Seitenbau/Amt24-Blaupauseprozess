@@ -3,6 +3,17 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+## Version 1.7
+
+Deployt am 2026-01-26
+
+- Die Blaupause unterstützt seit dieser Version die Übertragung an wahlweise das Behördenkonto oder eine eigene Transconnect Anbindung. Für die Transconnect Anbindung benötigte Parameter sind:
+  - `Transconnect URL`
+  - `Transconnect Keystore`
+  - `Transconnect KeystorePassword`
+  - `Transconnect Truststores`
+- In neu erstellten Blaupause-Prozessen wird nun der "Weiter"-Button je nachdem, ob es eine Bezahlung gibt, mit "Anliegen einreichen" oder "Zur Bezahlung" dargestellt.
+
 ## Version 1.6
 
 Deployt am: 2025-06-30
