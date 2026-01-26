@@ -26,7 +26,7 @@ Ab dem `Release 1.5` (07.04.2025) unterstützt der Blaupause-Assistenten ausschl
 
 ## Funktionsumfang
 
-![sk-blaupausenprozess](markdown-assets/blaupauseprozess-prozessskizze.png)
+![sk-blaupausenprozess](markdown-assets/blaupausen-prozessskizze-pd.png)
 
 Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierenden diese Schritte:
 
@@ -42,7 +42,7 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
     1. XML
     1. CSV
     1. PDF
-1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit mit den gewählten Datenformaten.
+1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit oder per Transconnect Anbindung mit den gewählten Datenformaten.
 
 ## Voraussetzungen zur Nutzung der Blaupause
 
@@ -55,7 +55,7 @@ Bitte beachten Sie, dass die Benutzergruppe Prozessassistent-Nutzer nur nach Bes
 - In Ihrem gewünschten Mandanten sind die Daten zum Bild, Datenschutzbeauftragten und Impressum gepflegt:
   ![image-20220517113909629](markdown-assets/pflege-mandantendetails.png)
 
-- Es existiert bereits ein Behördenkonto, welches die Antragsdaten empfangen soll.
+- Es existiert bereits ein Behördenkonto oder eine Transconnect Anbindung, welche(s) die Antragsdaten empfangen soll.
 
 - Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
 
@@ -122,6 +122,8 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 
 ![image-20230427135429661](markdown-assets/formular-deployen.png)
 
+Achten Sie bitte für die Erstellung von benutzerfreundlichen Formularen auf die [Guidelines](https://serviceportal-machbar.de/guidelines/formulare/).
+
 ### Neuen Prozess mit Blaupauseassistent erstellen
 
 Starten Sie nun der Blaupauseassistenten über den entsprechenden Button:
@@ -140,11 +142,12 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412144130090](markdown-assets/prozess-aktivieren-step-2.png)
 
-Falls Sie für Ihren Prozess die Bezahlfunktion aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
+Falls Sie für Ihren Prozess die Bezahlfunktion oder Transconnect Anbindung aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
 können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das
-Bearbeiten-Symbol (2). Die meisten der Parameter sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um
+Bearbeiten-Symbol (2). Die meisten der Parameter für die Bezahlung sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um
 Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter [zv@sid.sachsen.de](mailto:zv@sid.sachsen.de). Falls Sie Probleme
-oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner.
+oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner. Die Parameter für die
+Transconnect Anbindung werden benötigt um eine verschlüsselte Verbindung zu Ihrem System aufzubauen und die Antragsdaten zu senden.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
 
@@ -186,7 +189,7 @@ Falls Ihr Formular die Zertifizierungskriterien nicht erfüllt, erhalten Sie ein
 
 ![Navigieren Sie über "Verfahrengsmanagement", "Formulare", wählen Sie Ihre Formular aus der Liste, dann die entsprechende Version und klicken Sie dann auf "Formular zertifizieren"](markdown-assets/formular-zertifizieren.png)
 
-Bitte beachten Sie, sofern Sie Änderungen am Prozessmodell vorgehaben, ist vor Übertragung auf das Produktivsystem eine Zertifizierung notwendig. 
+Bitte beachten Sie, sofern Sie Änderungen am Prozessmodell vorhaben, ist vor Übertragung auf das Produktivsystem eine Zertifizierung notwendig. 
 Mehr Informationen dazu finden Sie im Artikel [Einreichung von Anfragen zur technischen Revision](https://doku.pmp.seitenbau.com/pages/viewpage.action?spaceKey=DFO&title=Einreichung+von+Anfragen+zur+technischen+Revision) auf der Dokumentation für Online-Dienste-Hersteller.
 
 ### Übertragung auf das Produktivsystem
