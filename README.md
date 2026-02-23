@@ -149,8 +149,6 @@ Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter [
 oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner. Die Parameter für die
 Transconnect Anbindung oder FIT-Connect Anbindung werden benötigt, um eine verschlüsselte Verbindung zu Ihrem System aufzubauen und die Antragsdaten zu senden.
 
-![img.png](markdown-assets/prozessparameter-bei-payment.png)
-
 Bitte aktivieren Sie für den Prozessparameter `ePayBL-keystorePassword` die Funktion `Wert schützen` (1). Damit wird der
 Wert später nicht mehr angezeigt (2) und kann dadurch nicht von anderen Personen kopiert werden:
 
