@@ -3,6 +3,19 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+## Version 1.8
+
+Deployt am 2026-02-25
+
+- Die Blaupause unterstützt seit dieser Version die Übertragung an wahlweise das Behördenkonto, eine eigene Transconnect Anbindung oder eine Fit-Connect Anbindung. Für die Fit-Connect Anbindung benötigte Parameter sind:
+  - `FIT-Connect clientId`
+  - `FIT-Connect clientSecret`
+  - `FIT-Connect destinationId`
+  - `FIT-Connect serviceName`
+  - `FIT-Connect serviceIdentifier`
+  - `FIT-Connect schemaURI`
+- Bugfix: Auf der Antragszusammenfassung wird nun explizit auf das "Postfach Ihres Nutzerkontos" anstatt das "Servicekonto-Postfach" verwiesen.
+
 ## Version 1.7
 
 Deployt am 2026-01-26

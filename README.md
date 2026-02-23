@@ -42,7 +42,7 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
     1. XML
     1. CSV
     1. PDF
-1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit oder per Transconnect Anbindung mit den gewählten Datenformaten.
+1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit, per Transconnect Anbindung oder per FIT-Connect Anbindung mit den gewählten Datenformaten.
 
 ## Voraussetzungen zur Nutzung der Blaupause
 
@@ -55,7 +55,7 @@ Bitte beachten Sie, dass die Benutzergruppe Prozessassistent-Nutzer nur nach Bes
 - In Ihrem gewünschten Mandanten sind die Daten zum Bild, Datenschutzbeauftragten und Impressum gepflegt:
   ![image-20220517113909629](markdown-assets/pflege-mandantendetails.png)
 
-- Es existiert bereits ein Behördenkonto oder eine Transconnect Anbindung, welche(s) die Antragsdaten empfangen soll.
+- Es existiert bereits ein Behördenkonto, eine Transconnect Anbindung oder eine FIT-Connect Anbindung, welche(s) die Antragsdaten empfangen soll.
 
 - Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
 
@@ -142,12 +142,12 @@ Aktivieren und verbinden Sie Ihren Prozess mit der erstellten Leistung:
 
 ![image-20220412144130090](markdown-assets/prozess-aktivieren-step-2.png)
 
-Falls Sie für Ihren Prozess die Bezahlfunktion oder Transconnect Anbindung aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
+Falls Sie für Ihren Prozess die Bezahlfunktion, eine Transconnect Anbindung oder eine FIT-Connect Anbindung aktiviert haben, werden Sie die Aktivierung noch nicht abschließen
 können. Öffnen Sie dann den Tab "2. Prozessparameter" (1) und befüllen Sie die Pflichtfelder über einen Klick auf das
 Bearbeiten-Symbol (2). Die meisten der Parameter für die Bezahlung sind ePayBL-Parameter - dies sind Parameter, die verwendet werden, um
 Ihr Bezahlungssystem zu identifizieren. Sie erhalten diese durch den SID unter [zv@sid.sachsen.de](mailto:zv@sid.sachsen.de). Falls Sie Probleme
 oder Fragen haben, die sich auf die Bezahlfunktion beschränken, ist auch hier der SID der richtige Ansprechpartner. Die Parameter für die
-Transconnect Anbindung werden benötigt um eine verschlüsselte Verbindung zu Ihrem System aufzubauen und die Antragsdaten zu senden.
+Transconnect Anbindung oder FIT-Connect Anbindung werden benötigt, um eine verschlüsselte Verbindung zu Ihrem System aufzubauen und die Antragsdaten zu senden.
 
 ![img.png](markdown-assets/prozessparameter-bei-payment.png)
 
