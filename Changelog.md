@@ -3,6 +3,12 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+## Version 1.8.1
+
+Deployt am 2026-03-09
+
+- Bugfix: Fehlerhafte Assoziationen und Anführungszeichen wurden aus dem Blaupause-Template entfernt, sodass nun beim Erstellen einer neuen Version (durch Kopieren einer Blaupause-Prozessversion) diese im Admincenter angepasst und deployt werden kann.
+
 ## Version 1.8
 
 Deployt am 2026-02-25
