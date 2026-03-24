@@ -11,7 +11,7 @@ Deployt am 2026-03-30
 - Der Prozesskey von generierten Blaupauseprozessen wird seit dieser Version nach einer neuen Logik erzeugt. 
   - Aus der Nutzereingabe (angegebenen Prozessnamen) werden nun maximal 30 Zeichen übernommen. Wenn die Nutzerangabe jedoch länger ist, wird abschließend eine zufällige Zeichenkette (a-z) von 4 Buchstaben ergänzt. 
   - Für bereits bestehende Prozesse wird versucht den bestehenden Prozesskey zu verwenden. Falls dabei ein Fehler auftritt, wird die neue Logik verwendet.
-- Die Hinweistexte im Blaupauseassistenten unter den Bereich `Datenschutzerklärung` wurden aktualisiert.
+- Die Hinweistexte im Blaupauseassistenten unter dem Bereich `Datenschutzerklärung` wurden aktualisiert.
 
 ## Version 1.8.1
 
