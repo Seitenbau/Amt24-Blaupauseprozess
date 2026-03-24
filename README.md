@@ -97,7 +97,7 @@ folgendermaßen vor:
     1. Ihre Organisation
     1. Dem Namen des Prozesses
     1. Einer Bezeichnung, dass es sich hierbei um das Formular für Antragsstellenden (und nicht z. B. um ein Prüfformular, oder
-       das Formular der Sachbearbeitung handelt). z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
+       das Formular der Sachbearbeitung) handelt. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
    ![image-20230427135212621](markdown-assets/formular-importieren.png)
    ![image-20220426155346545](markdown-assets/formular-importieren-schritt-2.png)
