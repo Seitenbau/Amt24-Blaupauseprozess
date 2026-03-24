@@ -3,6 +3,16 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+## Version 1.9
+
+Deployt am 2026-03-30
+
+- Die Blaupause unterstützt seit dieser Version die Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK). Im Blaupauseassistenten müssen für die korrekte Erfassung mindestens einer der beiden Parameter `Leistungsschlüssel` oder `Onlineservice-ID in der ZSK` angegeben werden.
+- Der Prozesskey von generierten Blaupauseprozessen wird seit dieser Version nach einer neuen Logik erzeugt. 
+  - Aus der Nutzereingabe (angegebenen Prozessnamen) werden nun maximal 30 Zeichen übernommen und abschließend eine zufällige Zeichenkette (a-z) von 4 Buchstaben ergänzt. 
+  - Für bereits bestehende Prozesse wird versucht den bestehenden Prozesskey zu verwenden. Falls dabei ein Fehler auftritt, wird die neue Logik verwendet.
+- Die Hinweistexte im Blaupauseassistenten unter den Bereich `Datenschutzerklärung` wurden aktualisiert.
+
 ## Version 1.8.1
 
 Deployt am 2026-03-09
