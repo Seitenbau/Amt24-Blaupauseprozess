@@ -35,14 +35,15 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
 1. Ausfüllen eines konfigurierbaren Formulars.
 1. Umwandlung des Formulars in eine PDF-Datei.
 1. Anzeige einer Zusammenfassungsseite, auf der die PDF-Datei geprüft werden kann.
-1. (Optional) Online-Bezahlung über ePayBL
-1. "Antrag eingereicht" Nachricht an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
+1. (Optional) Online-Bezahlung über ePayBL.
 1. Umwandlung in ein konfigurierbares Datenformat für die Sachbearbeitung. Die modellierende Person wählt dabei
    zwischen:
     1. XML
     1. CSV
     1. PDF
 1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit, per Transconnect Anbindung oder per FIT-Connect Anbindung mit den gewählten Datenformaten.
+1. Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK).
+1. "Antrag eingereicht" Nachricht an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
 
 ## Voraussetzungen zur Nutzung der Blaupause
 
@@ -97,7 +98,7 @@ folgendermaßen vor:
     1. Ihre Organisation
     1. Dem Namen des Prozesses
     1. Einer Bezeichnung, dass es sich hierbei um das Formular für Antragsstellenden (und nicht z. B. um ein Prüfformular, oder
-       das Formular der Sachbearbeitung handelt). z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
+       das Formular der Sachbearbeitung) handelt. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
    ![image-20230427135212621](markdown-assets/formular-importieren.png)
    ![image-20220426155346545](markdown-assets/formular-importieren-schritt-2.png)
