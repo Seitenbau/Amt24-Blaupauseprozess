@@ -7,7 +7,7 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 Deployt am 2026-06-11
 
-- In den generierten Blaupauseprozessen wird nun statt PDF-Zusammenfassung eine HTML-Tabelle mit den Benutzereingaben angezeigt.
+- In den generierten Blaupauseprozessen wird nun statt der PDF-Zusammenfassung eine HTML-Tabelle mit den Benutzereingaben angezeigt.
   - Die PDF-Zusammenfassungsdatei für die Nachricht an den Antragsteller wird jetzt unmittelbar vor dem Nachrichtenversand generiert.
 - Die Dateneingabe im Assistenten für die Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK) wurde optimiert.
 - Bugfix: Bei der XML-Generierung werden hochgeladene Dateien aus Multiupload-Feldern nun mit korrekten Attributen erstellt.
