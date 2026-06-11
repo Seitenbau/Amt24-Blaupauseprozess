@@ -3,6 +3,16 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+## Version 1.10
+
+Deployt am 2026-06-11
+
+- In den generierten Blaupauseprozessen wird nun statt der PDF-Zusammenfassung eine HTML-Tabelle mit den Benutzereingaben angezeigt.
+  - Die PDF-Zusammenfassungsdatei für die Nachricht an den Antragsteller wird jetzt unmittelbar vor dem Nachrichtenversand generiert.
+- Die Dateneingabe im Assistenten für die Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK) wurde optimiert.
+- Bugfix: Bei der XML-Generierung werden hochgeladene Dateien aus Multiupload-Feldern nun mit korrekten Attributen erstellt.
+
+
 ## Version 1.9
 
 Deployt am 2026-03-30
