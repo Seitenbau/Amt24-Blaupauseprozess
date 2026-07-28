@@ -19,7 +19,7 @@
 
 <!-- TOC end -->
 
-Der Blaupause-Prozess ist eine Vorlage, die dazu dient, möglichst schnell und einfach Anträge auf Amt24 bereitstellen zu können. 
+Der Blaupause-Prozess ist eine Vorlage, die dazu dient, möglichst schnell und einfach Anliegen auf Amt24 bereitstellen zu können. 
 Seine Verwendung richtet sich dabei speziell an Personen, die noch keine Erfahrung in der Prozessmodellierung haben oder lediglich das Layout der Formular-Funktion von Amt24 verwenden möchten.
 
 Ab dem `Release 1.5` (07.04.2025) unterstützt der Blaupause-Assistenten ausschließlich die Generierung von Prozessen mit den Authentifizierungsmitteln `BundID` und `Mein Unternehmenskonto`.
@@ -40,9 +40,9 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
     1. XML
     1. CSV
     1. PDF
-1. "Antrag eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit, per Transconnect Anbindung oder per FIT-Connect Anbindung mit den gewählten Datenformaten.
+1. "Anliegen eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit, per Transconnect Anbindung oder per FIT-Connect Anbindung mit den gewählten Datenformaten.
 1. Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK).
-1. "Antrag eingereicht" Nachricht (inklusive PDF des Antrags) an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
+1. "Anliegen eingereicht" Nachricht (inklusive PDF des Anliegens) an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
 
 ## Voraussetzungen zur Nutzung der Blaupause
 
@@ -174,7 +174,7 @@ Falls Sie auf Fehlermeldungen, wie bspw. `die Liste der Aufgaben konnte nicht ab
 
 ![image-20220412144823264](markdown-assets/navigieren-zu-prozesslogs.png)
 
-Testen Sie Ihren Prozess nun gut und ausführlich. Das bedeutet, dass Sie einmal die komplette Antragsstrecke vom Start des Antrags bis zum Eingang bei der zuständigen Behörde testen müssen. Eventuell möchten Sie auch andere Personen um weiteres Feedback bitten.
+Testen Sie Ihren Prozess nun gut und ausführlich. Das bedeutet, dass Sie einmal die komplette Antragsstrecke vom Start des Anliegens bis zum Eingang bei der zuständigen Behörde testen müssen. Eventuell möchten Sie auch andere Personen um weiteres Feedback bitten.
 
 
 ## Wie mache ich den Prozess allen Antragsberechtigten verfügbar?
