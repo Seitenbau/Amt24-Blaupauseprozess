@@ -10,7 +10,7 @@
 - [Wie kann ich meinen Prozess testen?](#wie-kann-ich-meinen-gebauten-Prozess-testen)
 	* [Prozess aktivieren](#prozess-aktivieren)
 	* [Prozess testen](#prozess-testen)
-- [Wie mache ich den Prozess allen Antragsberechtigten verfügbar?](#wie-mache-ich-den-prozess-allen-antragsberechtigten-verfügbar)
+- [Wie mache ich den Prozess allen antragstellenden Personen verfügbar?](#wie-mache-ich-den-prozess-allen-antragstellenden-Personen-verfügbar)
     * [Formular zertifizieren](#formular-zertifizieren)
     * [Übertragung auf das Produktivsystem](#übertragung-auf-das-produktivsystem)
     * [Prozess auffindbar machen](#prozess-auffindbar-machen)
@@ -31,7 +31,7 @@ Ab dem `Release 1.5` (07.04.2025) unterstützt der Blaupause-Assistenten ausschl
 Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierenden diese Schritte:
 
 1. Bestimmung des zuständigen Behördenkontos (anhand der konfigurierten Organisationseinheit).
-1. Login des Antragsstellers je nach Konfiguration mit `BundID` oder `Mein Unternehmenskonto`.
+1. Login der antragstellenden Person je nach Konfiguration mit `BundID` oder `Mein Unternehmenskonto`.
 1. Ausfüllen eines konfigurierbaren Formulars.
 1. Anzeige einer Zusammenfassungsseite, auf der die Eingaben geprüft werden können.
 1. (Optional) Online-Bezahlung über ePayBL.
@@ -41,8 +41,8 @@ Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modelliere
     1. CSV
     1. PDF
 1. "Anliegen eingegangen" Nachricht an das hinterlegte Postfach der Organisationseinheit, per Transconnect Anbindung oder per FIT-Connect Anbindung mit den gewählten Datenformaten.
-1. Erfassung der initialen Antragsstellung für die Zentrale Statistik-Komponente (ZSK).
-1. "Anliegen eingereicht" Nachricht (inklusive PDF des Anliegens) an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragsstellenden.
+1. Erfassung des initialen Anliegens für die Zentrale Statistik-Komponente (ZSK).
+1. "Anliegen eingereicht" Nachricht (inklusive PDF des Anliegens) an das verwendete `BundID-` oder `Mein Unternehmenskonto` der Antragstellenden.
 
 ## Voraussetzungen zur Nutzung der Blaupause
 
@@ -59,7 +59,7 @@ Bitte beachten Sie, dass die Benutzergruppe Prozessassistent-Nutzer nur nach Bes
 
 - Es existiert bereits eine Organisationseinheit, die für die Verarbeitung der Antragsdaten zuständig ist.
 
-    * Diese Organisationseinheit hat eine "Kommunikation" mit dem Kanal "Servicekonto" gepflegt, welches auf ein existierendes Behördenkonto zur Antragsannahme verweist: 
+    * Diese Organisationseinheit hat eine "Kommunikation" mit dem Kanal "Servicekonto" gepflegt, welches auf ein existierendes Behördenkonto zur Annahme der Anliegen verweist: 
       ![image-20220412143133537](markdown-assets/navigation-zu-kommunikation.png)
 
       ![image-20220412142045658](markdown-assets/verfikation-servicekonto-kommunikationskanal.png)
@@ -82,7 +82,7 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
 
 ### Formular einrichten
 
-Der Blaupause-Prozess erwartet exakt ein Formular, das dem Antragstellenden zum Ausfüllen angeboten wird.
+Der Blaupause-Prozess erwartet exakt ein Formular, das der antragstellenden Person zum Ausfüllen angeboten wird.
 
 Falls Sie noch kein solches Formular haben, empfehlen wir
 Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu
@@ -96,8 +96,7 @@ folgendermaßen vor:
    Underscore `_`.
     1. Ihre Organisation
     1. Dem Namen des Prozesses
-    1. Einer Bezeichnung, dass es sich hierbei um das Formular für Antragsstellenden (und nicht z. B. um ein Prüfformular, oder
-       das Formular der Sachbearbeitung) handelt. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
+    1. Einer Bezeichnung, dass es sich hierbei um das Formular für antragstellende Personen handelt. z. B. `LandesdirektionSachsen_Landarztgesetz_ApplicantForm`
 1. Laden Sie die `.json` Datei hoch:
    ![image-20230427135212621](markdown-assets/formular-importieren.png)
    ![image-20220426155346545](markdown-assets/formular-importieren-schritt-2.png)
@@ -174,10 +173,10 @@ Falls Sie auf Fehlermeldungen, wie bspw. `die Liste der Aufgaben konnte nicht ab
 
 ![image-20220412144823264](markdown-assets/navigieren-zu-prozesslogs.png)
 
-Testen Sie Ihren Prozess nun gut und ausführlich. Das bedeutet, dass Sie einmal die komplette Antragsstrecke vom Start des Anliegens bis zum Eingang bei der zuständigen Behörde testen müssen. Eventuell möchten Sie auch andere Personen um weiteres Feedback bitten.
+Testen Sie Ihren Prozess nun gut und ausführlich. Das bedeutet, dass Sie einmal den kompletten Online-Dienst bis zum Eingang bei der zuständigen Behörde testen müssen. Eventuell möchten Sie auch andere Personen um weiteres Feedback bitten.
 
 
-## Wie mache ich den Prozess allen Antragsberechtigten verfügbar?
+## Wie mache ich den Prozess allen antragstellenden Personen verfügbar?
 
 ### Formular zertifizieren
 
