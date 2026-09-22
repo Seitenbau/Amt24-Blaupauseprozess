@@ -3,6 +3,17 @@
 Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten relevante Änderungen. (D.h. rein interne Änderungen wie Refactoring werden hier nicht genannt).
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
+
+## Version 2.0
+
+Deployt am ???
+
+- Nachrichtenversand nach Erstellung Blaupauseprozess wurde entfernt (das ordentlich formulieren, ist erstmal nur festgehalten, damit es nicht vergessen wird)
+- ergänzen
+- ...
+
+
+
 ## Version 1.10
 
 Deployt am 2026-06-11
