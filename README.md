@@ -84,7 +84,7 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
 
 Der Blaupause-Prozess erwartet exakt ein Formular, das der antragstellenden Person zum Ausfüllen angeboten wird.
 
-**Hinweis:** Bitte beachten Sie, dass für das Formular im Formulardesigner "Engine-Version 2" angegeben ist.
+**Hinweis:** Bitte beachten Sie, dass das Formular für die "Engine-Version 2" kompatibel sein muss. Sie können entweder nach dieser Anleitung ein neues Formular erstellen oder mit diesem [Leitfaden](https://doku.pmp.seitenbau.com/x/qIT8BQ) Ihr bestehendes Formular anpassen.
 
 Falls Sie noch kein solches Formular haben, empfehlen wir
 Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu
