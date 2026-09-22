@@ -26,11 +26,11 @@ Ab dem `Release 1.5` (07.04.2025) unterstützt der Blaupause-Assistenten ausschl
 
 ## Funktionsumfang
 
-![sk-blaupausenprozess](markdown-assets/blaupausen-prozessskizze-pd.png)
+![blaupause-prozessbild.png](markdown-assets/blaupause-prozessbild.png)
 
 Der Blaupause-Prozess durchläuft nach seiner Konfiguration durch die Modellierenden diese Schritte:
 
-1. Bestimmung des zuständigen Behördenkontos (anhand der konfigurierten Organisationseinheit).
+1. Bestimmung des zuständigen Behördenkontos (anhand des Startparameters).
 1. Login der antragstellenden Person je nach Konfiguration mit `BundID` oder `Mein Unternehmenskonto`.
 1. Ausfüllen eines konfigurierbaren Formulars.
 1. Anzeige einer Zusammenfassungsseite, auf der die Eingaben geprüft werden können.
@@ -84,6 +84,8 @@ Um den Blaupause-Prozess zu nutzen und auf Ihre Anforderungen anzupassen, müsse
 
 Der Blaupause-Prozess erwartet exakt ein Formular, das der antragstellenden Person zum Ausfüllen angeboten wird.
 
+**Hinweis:** Bitte beachten Sie, dass für das Formular im Formulardesigner "Engine-Version 2" angegeben ist.
+
 Falls Sie noch kein solches Formular haben, empfehlen wir
 Ihnen, [diese Vorlage](./Modelliergruppe_Prozessname_ApplicantForm-v1.0-de.json) zu verwenden. Gehen Sie dazu
 folgendermaßen vor:
@@ -110,10 +112,10 @@ folgendermaßen vor:
       den [XML-Element Namensregeln](https://stackoverflow.com/a/31130882) entsprechen. 
 	  Wir empfehlen den Verzicht auf Trennzeichen und das Zusammenziehen der Wörter anhand Groß-/Kleinschreibung. Bsp: statt Formular_Feld_ID → FormularFeldID
 
-Sofern Sie bereits ein eigenes Formular (ohne die Vorlage) erstellt haben, überprüfen Sie bitte, ob eine ein- und ausgehende Anbindung an die Prozessinstanzvariable applicantForm besteht (in dieser Variable erwartet der Prozess die Formulardaten). 
+Sofern Sie bereits ein eigenes Formular (ohne die Vorlage) erstellt haben, überprüfen Sie bitte, ob eine ein- und ausgehende Anbindung an die Prozessinstanzvariable applicantForm besteht (in dieser Variable erwartet der Prozess die Formulardaten).
 Klicken Sie dazu im Formulardesigner auf das oberste Element und wählen das Zahnrad für die Einstellungen:
 
-![image-20220426155859315](markdown-assets/navigation-zu-formularanbindung.png)
+![formulardesignerV2.png](markdown-assets/formulardesignerV2.png)
 
 ![image-20220411121436469](markdown-assets/anbindungen-verifizieren.png)
 
