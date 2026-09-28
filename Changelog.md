@@ -12,7 +12,7 @@ Deployt am 05.10.2026
 - Der Blaupauseassistent-Prozess wurde auf die Prozessengine v2 migriert.
 - Der Blaupauseassistent unterstützt ausschließlich die Generierung von Prozessen auf der Prozessengine v2.
 - Der Prozessname neu generierter Blaupauseprozesse wird auf der Leistungsseite künftig ohne den Zusatz "(Blaupause Prozess)" angezeigt.
-- Umformulierung "Antrag" zu "Anliegen" in den Assistenten, generierten Prozessen und der Anleitung.
+- Umformulierung von "Antrag" zu "Anliegen" im Assistenten, in generierten Prozessen und in der Anleitung.
 
 
 ## Version 1.10
