@@ -11,7 +11,7 @@ Deployt am 05.10.2026
 - Der Nachrichtenversand für die Bestätigung der Erstellung eines Blaupauseprozesses wurde entfernt.
 - Der Blaupauseassistent-Prozess wurde auf die Prozessengine v2 migriert.
 - Der Blaupauseassistent unterstützt ausschließlich die Generierung von Prozessen auf der Prozessengine v2.
-- Der Prozessname neu generierter Blaupauseprozesse wird auf der Leistungsseite künftig ohne den Zusatz "(Blaupause Prozess)" angezeigt.
+- Der Prozessname neu generierter Blaupauseprozesse wird auf der Leistungsseite und im Prozess selbst künftig ohne den Zusatz "(Blaupause Prozess)" angezeigt. Im Admincenter bleibt der Zusatz bestehen.
 - Umformulierung von "Antrag" zu "Anliegen" im Assistenten, in generierten Prozessen und in der Anleitung.
 
 
