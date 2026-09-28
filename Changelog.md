@@ -6,12 +6,13 @@ Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-S
 
 ## Version 2.0
 
-Deployt am ???
+Deployt am 05.10.2026
 
-- Nachrichtenversand nach Erstellung Blaupauseprozess wurde entfernt (das ordentlich formulieren, ist erstmal nur festgehalten, damit es nicht vergessen wird)
-- ergänzen
-- ...
-
+- Der Nachrichtenversand für die Bestätigung der Erstellung eines Blaupauseprozesses wurde entfernt.
+- Der Blaupauseassistent-Prozess wurde auf die Prozessengine v2 migriert.
+- Der Blaupauseassistent unterstützt ausschließlich die Generierung von Prozessen auf der Prozessengine v2.
+- Der Prozessname neu generierter Blaupauseprozesse wird auf der Leistungsseite künftig ohne den Zusatz "(Blaupause Prozess)" angezeigt.
+- Umformulierung "Antrag" zu "Anliegen" in den Assistenten, generierten Prozessen und der Anleitung.
 
 
 ## Version 1.10
