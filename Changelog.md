@@ -4,6 +4,13 @@ Dieses Dokument listet alle für Nutzer der Blaupause / des Blaupauseassistenten
 Des Weiteren wird das Release-Datum, an dem die Änderungen auf dem Amt-24-Dev-System ausgerollt werden genannt.
 
 
+## Version 2.1
+
+Deployt am 04.11.2026
+
+- Der Blaupauseassistent unterstützt nun auch die Vertrauensniveau-Attribute `registerGericht`, `registerNummer`, `registerArt`, `communityId` und `pseudonymId`, die in den Metadaten für den erzeugten Prozess automatisch gesetzt werden können.
+
+
 ## Version 2.0
 
 Deployt am 05.10.2026
