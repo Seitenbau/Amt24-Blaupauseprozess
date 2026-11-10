@@ -6,6 +6,7 @@
 - [Voraussetzungen zur Nutzung der Blaupause](#voraussetzungen-zur-nutzung-der-blaupause)
 - [Wie erstelle ich einen Prozess mit dem Blaupauseassistenten?](#wie-erstelle-ich-einen-prozess-mit-dem-blaupauseassistenten)
     * [Formular einrichten](#formular-einrichten)
+    * [Bekannte Fehlermeldungen bei der Formularerstellung](#bekannte-fehlermeldungen-bei-der-formularerstellung)
     * [Neuen Prozess mit Blaupauseassistent erstellen](#neuen-prozess-mit-blaupauseassistent-erstellen)
 - [Wie kann ich meinen Prozess testen?](#wie-kann-ich-meinen-gebauten-Prozess-testen)
 	* [Prozess aktivieren](#prozess-aktivieren)
@@ -124,6 +125,14 @@ Zuletzt müssen Sie sicherstellen, dass das Formular deployt ist:
 ![image-20230427135429661](markdown-assets/formular-deployen.png)
 
 Achten Sie bitte für die Erstellung von benutzerfreundlichen Formularen auf die [Guidelines](https://serviceportal-machbar.de/guidelines/formulare/).
+
+### Bekannte Fehlermeldungen bei der Formularerstellung
+
+1. Fehlermeldung „Am Feld XY darf das Attribut „Layout“ nicht gesetzt sein“ ODER "Im Formular XY am Feld XY muss das Attribut ´layout´ einen der folgenden Werte haben [horizontal,
+   vertical]“:
+   Wenn Sie Felder mit Listen in Ihr Formular einbinden (z.B. Radiobuttons oder Checklisten) müssen Sie im Bearbeitungsfenster des Feldmoduls im Reiter „Listen Anordnung“ angeben, ob die Liste horizontal oder vertikal ausgegeben werden soll.
+2. Fehlermeldung „In der einfachen Feldgruppe XY darf addrow Button nicht gesetzt sein":
+   Wenn Sie eine mehrfach ausfüllbare Feldgruppe in eine einfache Feldgruppe umändern, muss zuvor die Konfiguration eines individuellen Hinzufügen-Buttons entfernt werden.
 
 ### Neuen Prozess mit Blaupauseassistent erstellen
 
